@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Math Runner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css">
+  <style>
+    
+  </style>
+</head>
+<body>
+<div class="scene">
+
+  <!-- Sky -->
+  <div class="sky"></div>
+
+  <!-- Sun -->
+  <div class="sun"></div>
+
+  <!-- Clouds -->
+  <div class="clouds-wrap">
+    <div class="cloud cloud1">
+      <div class="cloud-block" style="width:32px;height:16px;top:16px;left:0;"></div>
+      <div class="cloud-block" style="width:56px;height:26px;top:6px;left:14px;"></div>
+      <div class="cloud-block" style="width:32px;height:16px;top:0;left:28px;"></div>
+      <div class="cloud-block" style="width:72px;height:18px;top:18px;left:8px;"></div>
+    </div>
+    <div class="cloud cloud2">
+      <div class="cloud-block" style="width:24px;height:12px;top:12px;left:0;"></div>
+      <div class="cloud-block" style="width:44px;height:22px;top:4px;left:10px;"></div>
+      <div class="cloud-block" style="width:24px;height:12px;top:0;left:20px;"></div>
+      <div class="cloud-block" style="width:60px;height:14px;top:14px;left:4px;"></div>
+    </div>
+    <div class="cloud cloud3">
+      <div class="cloud-block" style="width:28px;height:14px;top:14px;left:0;"></div>
+      <div class="cloud-block" style="width:50px;height:24px;top:4px;left:12px;"></div>
+      <div class="cloud-block" style="width:28px;height:14px;top:0;left:24px;"></div>
+      <div class="cloud-block" style="width:66px;height:16px;top:16px;left:6px;"></div>
+    </div>
+  </div>
+
+  <!-- Mountains -->
+  <svg class="mountains" viewBox="0 0 1280 220" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" style="height:220px;">
+    <polygon points="0,220 120,60 240,220"  fill="#5a7a5a"/>
+    <polygon points="100,220 240,30 380,220" fill="#4a6e4a"/>
+    <polygon points="270,220 400,80 530,220" fill="#5a7a5a"/>
+    <polygon points="240,220 370,45 500,220" fill="#3d6040"/>
+    <polygon points="480,220 600,90 720,220" fill="#4a6e4a"/>
+    <polygon points="620,220 760,40 900,220" fill="#5a7a5a"/>
+    <polygon points="760,220 900,70 1040,220" fill="#3d6040"/>
+    <polygon points="920,220 1060,95 1200,220" fill="#4a6e4a"/>
+    <polygon points="1060,220 1180,55 1300,220" fill="#5a7a5a"/>
+    <!-- Snow caps -->
+    <polygon points="220,42 240,28 258,42"  fill="#d8eeff" opacity="0.75"/>
+    <polygon points="235,38 242,28 250,38"  fill="#eef7ff" opacity="0.85"/>
+    <polygon points="355,57 370,42 385,57"  fill="#d8eeff" opacity="0.75"/>
+    <polygon points="742,52 760,38 778,52"  fill="#d8eeff" opacity="0.75"/>
+    <polygon points="755,46 762,36 770,46"  fill="#eef7ff" opacity="0.85"/>
+    <polygon points="1058,64 1078,48 1098,64" fill="#d8eeff" opacity="0.75"/>
+  </svg>
+
+  <!-- Ground -->
+  <div class="ground"></div>
+
+  <!-- Scanlines overlay -->
+  <div class="scanline"></div>
+
+  <!-- Corner decorations -->
+  <div class="corner tl"></div>
+  <div class="corner tr"></div>
+  <div class="corner bl"></div>
+  <div class="corner br"></div>
+
+  <!-- Main content -->
+  <div class="content">
+    <div class="press-start">— MATH RUNNER —</div>
+
+    <div class="title-main">MATH<br>RUNNER</div>
+
+    <div class="title-th">คิดให้ไว·วิ่งให้ทัน</div>
+
+    <div class="btn-group">
+
+      <!-- Start -->
+      <button class="px-btn btn-start" onclick="alert('เริ่มเกม!')">
+        <svg class="ico" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="3,2 13,8 3,14" fill="#0a2200"/>
+        </svg>
+        เริ่มเกม
+      </button>
+
+      <!-- Leaderboard -->
+      <button class="px-btn btn-lb" onclick="alert('Leaderboard')">
+        <svg class="ico" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="1" y="9"  width="4" height="6" fill="#FFE566"/>
+          <rect x="6" y="5"  width="4" height="10" fill="#FFE566"/>
+          <rect x="11" y="7" width="4" height="8" fill="#FFE566"/>
+          <rect x="2" y="3"  width="3" height="2" fill="#FFE566"/>
+          <rect x="1" y="2"  width="5" height="1" fill="#FFE566"/>
+          <rect x="2" y="1"  width="3" height="1" fill="#FFE566"/>
+        </svg>
+        Leaderboard
+      </button>
+
+      <!-- Settings -->
+      <button class="px-btn btn-cfg" onclick="alert('ตั้งค่า')">
+        <svg class="ico" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="7" y="0"  width="2" height="3" fill="#fff"/>
+          <rect x="7" y="13" width="2" height="3" fill="#fff"/>
+          <rect x="0" y="7"  width="3" height="2" fill="#fff"/>
+          <rect x="13" y="7" width="3" height="2" fill="#fff"/>
+          <rect x="5" y="5"  width="6" height="6" fill="#fff"/>
+          <rect x="6" y="6"  width="4" height="4" fill="#1a1a1a"/>
+          <rect x="2" y="2"  width="2" height="2" fill="#fff"/>
+          <rect x="12" y="2" width="2" height="2" fill="#fff"/>
+          <rect x="2" y="12" width="2" height="2" fill="#fff"/>
+          <rect x="12" y="12" width="2" height="2" fill="#fff"/>
+        </svg>
+        ตั้งค่า
+      </button>
+
+    </div>
+  </div>
+</div>
+<script src="script.js"></script>
+</body>
+</html> 
