@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,22 +11,29 @@
 </head>
 <body>
   <div class="background">
-    <img src="../picture/Cloud.png" alt="" id="cloud-left">
-    <img src="../picture/Cloud.png" alt="" id="cloud-right">
-    <img src="../picture/sun.png" alt="" id="sun">
+    <img src="../picture/Cloud.png" alt="Decorative cloud" id="cloud-left" width="280" height="auto">
+    <img src="../picture/Cloud.png" alt="Decorative cloud" id="cloud-right" width="280" height="auto">
+    <img src="../picture/sun.png" alt="Decorative sun" id="sun" width="200" height="auto">
   </div>
   <div class="run">
-    <img src="../picture/running.png" alt="" id="boyRun">
+    <img src="../picture/running.png" alt="Character running animation" id="boyRun" width="350" height="auto">
   </div>
   <main class="container">
     <h1>คิดให้ไววิ่งให้ทัน</h1>
     <h2>(MATH RUNNER)</h2>
 
-    <div class="btn">
-      <button id="start-btn">เริ่มเกม</button>
-      <button id="setting-btn">a</button>
-      <button id="leader-btn">🏆</button>
-    </div>
+    <nav class="btn">
+      <button id="start-btn" class="mainbtn">เริ่มเกม</button>  
+  </nav>
+    
+    <nav class="sub-btn" >
+      <button id="setting-btn" aria-label="Settings" class="mainbtn">
+        <img src="../picture/setting.png" alt="" width="35" height="35" >
+      </button>
+      <button id="leaderbord-btn" aria-label="Leaderboard" class="mainbtn">
+        <img src="../picture/trophy.png" alt="" width="35" height="35" >
+      </button>
+    </nav>
   </main>
   <script src="script.js"></script>
 </body>

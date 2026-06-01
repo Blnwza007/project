@@ -24,29 +24,29 @@ main {
 }
 
 main h1 {
-  text-align: center; 
   font-family: 'Pixellet', sans-serif;
   margin: 40px auto 0;
   margin-top: 40px; 
-  justify-content: center; 
   font-size: 45px;
   align-items: center;
-  color: #fbba03;
+  color: #ffc700;
   text-shadow:
-    -2px -2px 0 #7e5d00,
-     2px -2px 0 #7e5d00,
-    -2px  2px 0 #7e5d00,
-     2px  2px 0 #7e5d00,
-    -2px  0   0 #7e5d00,
-     2px  0   0 #7e5d00,
-     0   -2px 0 #7e5d00,
-     0    2px 0 #7e5d00;
+    -3px -3px 0 #6b4e00,
+     3px -3px 0 #6b4e00,
+    -3px  3px 0 #6b4e00,
+     3px  3px 0 #6b4e00,
+    -3px  0   0 #6b4e00,
+     3px  0   0 #6b4e00,
+     0   -3px 0 #6b4e00,
+     0    3px 0 #6b4e00;
     animation: bounceIn 0.7s ease forwards, floating 3s ease-in-out infinite 0.7s;
+    line-height: 1.2;
+    letter-spacing: 1px;
 }
 
 main h2 {
    font-family: 'Pixellet', sans-serif;
-   color: #ffff;
+   color: #ffffff;
    text-shadow:
    -2px -2px 0 #000000,
      2px -2px 0 #000000,
@@ -56,8 +56,10 @@ main h2 {
      2px  0   0 #000000,
      0   -2px 0 #000000,
      0    2px 0 #000000;
-    font-size: 30px;
-    opacity: 0; 
+    font-size: 24px;
+    opacity: 1;
+    margin-top: 8px;
+    letter-spacing: 2px;
     animation: 
       fadeInUp 0.8s ease forwards 0.5s, 
       h2-pulse 2s ease-in-out infinite 1.3s;
@@ -104,6 +106,7 @@ main h2 {
 #boyRun {
   position: absolute;
   width: 350px; 
+  left: -350px;
 }
 
 #sun {
@@ -115,42 +118,226 @@ main h2 {
   animation: pulse 4s ease-in-out infinite;
 }
 
-#start-btn {
+.btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;         
+  margin-top: 40px; 
+  width: 100%;
+}
+
+.mainbtn {
+  width: 239px;       
+  height: 65px;       
   font-size: 18px;
   font-family: "Kanit", sans-serif;
   font-weight: 500;
   font-style: italic;
   color: #ffffff;
   background-color: #d85718;
-  border: none;
+  border: 3px solid #000000;
   cursor: pointer;
-  padding: 5px 80px; 
   position: relative;
   outline: none;
-  margin-top: 30px; 
+  margin-top: 0;      
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  border: 1px solid black;
+  box-shadow: 
+    0px -4px 0px 0px #000000,  
+    0px 4px 0px 0px #000000,   
+    -4px 0px 0px 0px #000000,  
+    4px 0px 0px 0px #000000,   
+    -4px -4px 0px -2px #000000,
+    4px -4px 0px -2px #000000,
+    -4px 4px 0px -2px #000000,
+    4px 4px 0px -2px #000000,
+    inset 0px 2px 0px 0px rgba(255, 255, 255, 0.4),
+    inset 2px 0px 0px 0px rgba(255, 255, 255, 0.4);
+    
+  border-radius: 4px; 
+  opacity: 1;
+  filter: brightness(1);
+  transform: scale(1) translateY(0);
+}
 
+/* Hover Effect */
+.mainbtn:hover:not(:disabled) {
+  background-color: #e5671f;
+  transform: scale(1.08) translateY(-3px);
+  box-shadow: 
+    0px -8px 0px 0px #000000,  
+    0px 8px 0px 0px #000000,   
+    -8px 0px 0px 0px #000000,  
+    8px 0px 0px 0px #000000,   
+    -8px -8px 0px -2px #000000,
+    8px -8px 0px -2px #000000,
+    -8px 8px 0px -2px #000000,
+    8px 8px 0px -2px #000000,
+    inset 0px 5px 0px 0px rgba(255, 255, 255, 0.6),
+    inset 5px 0px 0px 0px rgba(255, 255, 255, 0.6);
+  filter: brightness(1.1);
+}
+
+/* Active Effect */
+.mainbtn:active:not(:disabled) {
+  transform: scale(0.95) translateY(2px);
+  box-shadow: 
+    0px -3px 0px 0px #000000,  
+    0px 3px 0px 0px #000000,   
+    -3px 0px 0px 0px #000000,  
+    3px 0px 0px 0px #000000,   
+    inset 0px 5px 0px 0px rgba(255, 255, 255, 0.2),
+    inset 5px 0px 0px 0px rgba(255, 255, 255, 0.2);
+}
+
+/* Disabled State */
+.mainbtn:disabled {
+  background-color: #a0a0a0;
+  color: #606060;
+  cursor: not-allowed;
+  opacity: 0.6;
+  filter: brightness(0.8) saturate(0.5);
+  transform: scale(1);
+}
+
+.mainbtn:focus-visible {
+  outline: 3px solid rgba(255, 255, 255, 0.9);
+  outline-offset: 2px;
   box-shadow: 
     0px -6px 0px 0px #000000,  
     0px 6px 0px 0px #000000,   
     -6px 0px 0px 0px #000000,  
     6px 0px 0px 0px #000000,   
-    
     -6px -6px 0px -2px #000000,
     6px -6px 0px -2px #000000,
     -6px 6px 0px -2px #000000,
     6px 6px 0px -2px #000000,
-    inset 0px 5px 0px 0px #ffffff,
-    inset 5px 0px 0px 0px #ffffff;
-    
-  border-radius: 0; 
-  opacity: 1;
+    inset 0px 5px 0px 0px rgba(255, 255, 255, 0.4),
+    inset 5px 0px 0px 0px rgba(255, 255, 255, 0.4),
+    0px 0px 0px 4px rgba(255, 200, 0, 0.6);
 }
 
-#start-btn:active {
-  transform: translateY(4px);
-  box-shadow:
-    0 0 0 3px #a33a10,
-    inset 0 2px 0 #f4935a;
+.sub-btn {
+  display: flex;
+  flex-direction: row;     
+  justify-content: center;
+  align-items: center;
+  margin-top: 30px;
+  gap: 150px;
+  flex-wrap: wrap;
+}
+
+/* Icon buttons styling */
+#setting-btn,
+#leaderbord-btn {
+  width: 180px;
+  height: 70px;
+  background: #d85718;
+  border: 1px solid #000000;
+  border-radius: 4px;
+  padding: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  outline: none;
+}
+
+#setting-btn img,
+#leaderbord-btn img {
+  width: 180px;
+  height: 80px;
+}
+
+#setting-btn:hover,
+#leaderbord-btn:hover {
+  background-color: #e5671f;
+  transform: scale(1.1) translateY(-2px);
+  box-shadow: 
+    0px -6px 0px 0px #000000,
+    0px 6px 0px 0px #000000,
+    -6px 0px 0px 0px #000000,
+    6px 0px 0px 0px #000000;
+  filter: brightness(1.15);
+}
+
+#setting-btn:active,
+#leaderbord-btn:active {
+  transform: scale(0.95) translateY(1px);
+  box-shadow: 
+    0px -2px 0px 0px #000000,
+    0px 2px 0px 0px #000000,
+    -2px 0px 0px 0px #000000,
+    2px 0px 0px 0px #000000;
+}
+
+#setting-btn:focus-visible,
+#leaderbord-btn:focus-visible {
+  outline: 3px solid rgba(255, 255, 255, 0.9);
+  outline-offset: 2px;
+}
+
+#start-btn::after {
+  content: '▶';
+  margin-left: 8px;
+  font-size: 14px;
+  animation: arrow-bounce 0.6s ease-in-out infinite alternate;
+}
+
+.mainbtn:hover:not(:disabled), #setting-btn:hover:not(:disabled), #leaderbord-btn:hover:not(:disabled) {
+    transform: scale(1.05) translateY(-2px);
+    box-shadow: 
+      0px -5px 0px 0px #000000,  
+      0px 5px 0px 0px #000000,   
+      -5px 0px 0px 0px #000000,  
+      5px 0px 0px 0px #000000,   
+      inset 0px 3px 0px 0px rgba(255, 255, 255, 0.5);
+  }
+
+@keyframes button-idle-pulse {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.05); }
+}
+
+@keyframes arrow-bounce {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(4px); }
+}
+
+@keyframes button-pulse {
+  0%, 100% {
+    box-shadow: 
+      0px -6px 0px 0px #000000,  
+      0px 6px 0px 0px #000000,   
+      -6px 0px 0px 0px #000000,  
+      6px 0px 0px 0px #000000,   
+      -6px -6px 0px -2px #000000,
+      6px -6px 0px -2px #000000,
+      -6px 6px 0px -2px #000000,
+      6px 6px 0px -2px #000000,
+      inset 0px 5px 0px 0px rgba(255, 255, 255, 0.4),
+      inset 5px 0px 0px 0px rgba(255, 255, 255, 0.4);
+  }
+  50% {
+    box-shadow: 
+      0px -7px 0px 0px #000000,  
+      0px 7px 0px 0px #000000,   
+      -7px 0px 0px 0px #000000,  
+      7px 0px 0px 0px #000000,   
+      -7px -7px 0px -2px #000000,
+      7px -7px 0px -2px #000000,
+      -7px 7px 0px -2px #000000,
+      7px 7px 0px -2px #000000,
+      inset 0px 5px 0px 0px rgba(255, 255, 255, 0.5),
+      inset 5px 0px 0px 0px rgba(255, 255, 255, 0.5);
+  }
 }
 
 @keyframes drift-left {
@@ -202,37 +389,179 @@ main h2 {
   }
 }
 
-/* ── Very small phones (max 360px) ── */
-@media (max-width: 360px) {
-  body {
-    background-position: center top;
+/* Accessibility: Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
+}
 
+/* ── Laptop (max width ) ── */
+@media (max-width: 1024px) {
+  .run {
+    bottom: 70px;
+  }  
+}
+
+/* ── tablet (max width 768px) ── */
+@media (max-width: 768px)  {
   main h1 {
-    font-size: 30px;
+    font-size: 36px;
   }
 
   main h2 {
-    font-size: 22px;
+    font-size: 20px;
+  }
+
+  .mainbtn {
+    width: 210px;
+    height: 65px;
+    font-size: 20px;
+  }
+  
+  #setting-btn img,
+  #leaderbord-btn img {
+    width: 150px;  
+  }
+
+  #setting-btn,
+  #leaderbord-btn {
+    width: 180px;
+    height: 55px;
+  }
+
+  #cloud-left {
+    width: 220px;
+  }
+
+  #cloud-right {
+    width: 220px;
+  }
+
+  #boyRun {
+    width: 400px;
+  }
+
+  .run {
+    bottom: 70px;
+  }
+
+  #sun {
+    width: 200px;
+  }
+}
+
+/* ── Large phones (max 425px) */
+@media (max-width: 425px) {
+  .mainbtn {
+    width: 170px;       
+    height: 45px;       
+    font-size: 15px;    
+
+    box-shadow: 
+      0px -3px 0px 0px #000000,  
+      0px 3px 0px 0px #000000,   
+      -3px 0px 0px 0px #000000,  
+      3px 0px 0px 0px #000000,   
+      -3px -3px 0px -1px #000000,
+      3px -3px 0px -1px #000000,
+      -3px 3px 0px -1px #000000,
+      3px 3px 0px -1px #000000,
+      inset 0px 2px 0px 0px rgba(255, 255, 255, 0.4),
+      inset 2px 0px 0px 0px rgba(255, 255, 255, 0.4);
+  }
+
+  .sub-btn {
+    display: flex;
+    flex-direction: row;     
+    justify-content: center;   
+    gap: 70px;                 
+    margin-top: 25px;
+  }
+
+  #setting-btn,
+  #leaderbord-btn {
+    width: 120px;              
+    height: 40px;              
+    border: 1px solid #000000;
+    cursor: pointer;
+    display: inline-flex;      
+  }
+
+  #setting-btn img,
+  #leaderbord-btn img {
+    height: 60px;               
+    width: 100px;               
+  }
+
+  .run {
+    bottom: 50px;
+  }
+
+  #boyRun {
+    width: 300px;
+  }
+}
+
+/* ── small phones (max 375px) ── */
+@media (max-width: 375px)  {
+  .mainbtn {
+    width: 150px;       
+    height: 45px;       
+    font-size: 15px;    
+
+    box-shadow: 
+      0px -3px 0px 0px #000000,  
+      0px 3px 0px 0px #000000,   
+      -3px 0px 0px 0px #000000,  
+      3px 0px 0px 0px #000000,   
+      -3px -3px 0px -1px #000000,
+      3px -3px 0px -1px #000000,
+      -3px 3px 0px -1px #000000,
+      3px 3px 0px -1px #000000,
+      inset 0px 2px 0px 0px rgba(255, 255, 255, 0.4),
+      inset 2px 0px 0px 0px rgba(255, 255, 255, 0.4);
+  }
+
+  .sub-btn {
+    gap: 30px;    
+    margin-top: 20px;
+  }
+
+  #setting-btn,
+  #leaderbord-btn {
+    width: 120px;        
+    height: 40px;       
+    border: 1px solid #000000; 
+  }
+
+  main h1 {
+    font-size: 28px;
+  }
+
+  main h2 {
+    font-size: 16px;
+    letter-spacing: 1px;
   }
 
   #cloud-left {
     top: 5%;
-    width: 170px;
+    width: 150px;
   }
 
   #cloud-right {
     top: 3%;
-    width: 170px;
+    width: 150px;
   }
 
   .run {
-      bottom: 45px; 
+      bottom: 55px; 
   }
   
   #boyRun {
-     width: 300px; 
-     
+     width: 260px;
   }
 
   #sun {
@@ -242,20 +571,14 @@ main h2 {
     width: 150px; 
   }
 
-  #start-btn {
-    padding: 5px 50px;
-    font-size: 13px;
-    box-shadow: 
-    0px -5px 0px 0px #000000,  
-    0px 5px 0px 0px #000000,   
-    -5px 0px 0px 0px #000000,  
-    5px 0px 0px 0px #000000,   
-    
-    -5px -5px 0px -2px #000000,
-    5px -5px 0px -2px #000000,
-    -5px 5px 0px -2px #000000,
-    5px 5px 0px -2px #000000,
-    inset 0px 4px 0px 0px #ffffff,
-    inset 4px 0px 0px 0px #ffffff;
+  .sub-btn {
+    gap: 60px;
+  }
+  
+  #leaderbord-btn img, #setting-btn img {
+    width: 120px;
+    height: 60px;
   }
 }
+
+
