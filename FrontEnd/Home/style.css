@@ -12,6 +12,7 @@ body {
   background-size: cover;      
   background-position: center bottom; 
   background-repeat: no-repeat;
+  overflow-y: hidden;
 }
 
 main {
@@ -100,7 +101,7 @@ main h2 {
   z-index: 0;
   display: flex;
   align-items: flex-end;
-  bottom: 12%;
+  bottom: 10%;
 }
 
 #boyRun {
@@ -448,10 +449,6 @@ main h2 {
     width: 200px;
   }
 
-  .run {
-    bottom: 10%;
-  }
-
 }
 
 /* ── Large phones (max 425px) */
@@ -499,10 +496,6 @@ main h2 {
 
   #boyRun {
     width: 300px;
-  }
-
-  .run {
-    bottom: 10%;
   }
 
 }
@@ -556,10 +549,6 @@ main h2 {
   #cloud-right {
     top: 3%;
     width: 150px;
-  }
-  
-  .run {
-    bottom: 10%;
   }
 
   #boyRun {
