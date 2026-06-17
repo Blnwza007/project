@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ตั้งค่า – คิดให้ไววิ่งให้ทัน</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,400;0,500;0,600;0,700;1,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Background decoration -->
+  <div class="background">
+    <img src="../../picture/Cloud.png" alt="" id="cloud-left" width="280">
+    <img src="../../picture/Cloud.png" alt="" id="cloud-right" width="280">
+    <img src="../../picture/sun.png" alt="" id="sun" width="200">
+  </div>
+
+  <!-- Running character -->
+  <div class="run">
+    <img src="../../picture/boy_running1.png" alt="" id="boyRun" width="350" style="display:none;">
+    <img src="../../picture/girl_running.png" alt="" id="girlRun" width="100">
+  </div>
+
+  <main class="container">
+    <!-- Panel -->
+    <div class="panel">
+
+      <!-- Panel header -->
+      <div class="panel-header">
+        <h1>ตั้งค่า</h1>
+        <h2>SETTINGS</h2>
+      </div>
+
+      <!-- ── ระบบแท็บเมนูด้านบน ── -->
+      <nav class="tabs-nav">
+        <button class="tab-btn active" data-target="tab-name">ชื่อผู้เล่น</button>
+        <button class="tab-btn" data-target="tab-char">ตัวละคร</button>
+        <button class="tab-btn" data-target="tab-lang">ภาษา</button>
+      </nav>
+
+      <div class="panel-body">
+        <!-- ── แท็บ 1: ชื่อผู้เล่น (แสดงตอนแรก) ── -->
+        <section id="tab-name" class="tab-content active">
+          <div class="section-label">
+            <span class="label-icon">👤</span>
+            <span class="label-text">ชื่อผู้เล่น</span>
+            <span class="label-en">PLAYER NAME</span>
+          </div>
+          <div class="input-row">
+            <input
+              type="text"
+              id="player-name"
+              class="pixel-input"
+              maxlength="16"
+              placeholder="ใส่ชื่อที่นี่..."
+              autocomplete="off"
+            >
+            <button class="icon-btn" id="clear-name-btn" title="ลบชื่อ" aria-label="ลบชื่อ">✕</button>
+          </div>
+          <div class="char-count"><span id="name-count">0</span>/16</div>
+        </section>
+
+        <section id="tab-char" class="tab-content">
+          <div class="section-label">
+            <span class="label-icon">🏃</span>
+            <span class="label-text">ตัวละคร</span>
+            <span class="label-en">CHARACTER</span>
+          </div>
+          <div class="character-grid">
+            <button class="char-card selected" data-char="girl" id="char-girl">
+              <div class="char-preview">
+                <img src="../../picture/girl_running.png" alt="girl" onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
+                <span class="char-fallback" style="display:none">👧</span>
+              </div>
+              <span class="char-name">หญิง</span>
+              <span class="char-name-en">GIRL</span>
+              <div class="selected-badge">✔</div>
+            </button>
+            <button class="char-card" data-char="boy" id="char-boy">
+              <div class="char-preview">
+                <img src="../../picture/boy_running1.png" alt="boy" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" style="width: 300px;">
+                <span class="char-fallback" style="display:none; ">🧒</span>
+              </div>
+              <span class="char-name">ชาย</span>
+              <span class="char-name-en">BOY</span>
+              <div class="selected-badge">✔</div>
+            </button>
+          </div>
+        </section>
+
+        <!-- ── แท็บ 3: ภาษา ── -->
+        <section id="tab-lang" class="tab-content">
+          <div class="section-label">
+            <span class="label-icon">🌐</span>
+            <span class="label-text">ภาษา</span>
+            <span class="label-en">LANGUAGE</span>
+          </div>
+          <div class="lang-row">
+            <button class="lang-btn selected" data-lang="th" id="lang-th">
+              <span class="lang-flag">🇹🇭</span>
+              <span>ภาษาไทย</span>
+            </button>
+            <button class="lang-btn" data-lang="en" id="lang-en">
+              <span class="lang-flag">🇬🇧</span>
+              <span>English</span>
+            </button>
+          </div>
+        </section>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- ── Buttons ── -->
+      <div class="action-row">
+        <a href="../index.html" class="mainbtn back-btn">← กลับ</a>
+        <button class="mainbtn save-btn" id="save-btn">บันทึก ✔</button>
+      </div>
+
+      <!-- Save toast -->
+      <div class="toast" id="toast">✔ บันทึกแล้ว!</div>
+
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

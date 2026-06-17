@@ -94,19 +94,23 @@ main h2 {
 
 .run {
   position: fixed;
-  bottom: 0;
   left: 0;
   width: 100%;
   pointer-events: none;
   z-index: 0;
   display: flex;
-  align-items: flex-end;
-  bottom: 10%;
+  align-items: center;
+  bottom: 25%;
 }
 
 #boyRun {
   position: absolute;
   width: 350px; 
+  left: -350px;
+}
+#girlRun {
+  position: absolute;
+  width: 80px;
   left: -350px;
 }
 
@@ -253,7 +257,7 @@ main h2 {
 
 #setting-btn img,
 #leaderbord-btn img {
-  width: 180px;
+  width: 150px;
   height: 80px;
 }
 
@@ -417,20 +421,21 @@ main h2 {
   }
 
   .mainbtn {
-    width: 210px;
-    height: 65px;
+    width: 160px;
+    height: 45px;
     font-size: 20px;
   }
   
   #setting-btn img,
   #leaderbord-btn img {
-    width: 150px;  
+    width: 120px;
+    height: 55px;  
   }
 
   #setting-btn,
   #leaderbord-btn {
-    width: 180px;
-    height: 55px;
+    width: 150px;
+    height: 40px;
   }
 
   #cloud-left {
@@ -439,6 +444,10 @@ main h2 {
 
   #cloud-right {
     width: 220px;
+  }
+
+  .run {
+  bottom: 25%;
   }
 
   #boyRun {
@@ -494,6 +503,10 @@ main h2 {
     width: 100px;               
   }
 
+  .run {
+    bottom: 25%;
+  }
+
   #boyRun {
     width: 300px;
   }
@@ -546,9 +559,14 @@ main h2 {
     width: 150px;
   }
 
+
   #cloud-right {
     top: 3%;
     width: 150px;
+  }
+
+  .run {
+    bottom: 25%;
   }
 
   #boyRun {
@@ -571,5 +589,3 @@ main h2 {
     height: 60px;
   }
 }
-
-
