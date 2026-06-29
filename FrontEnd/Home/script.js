@@ -1,7 +1,6 @@
-// ดึงข้อมูลการตั้งค่ามาจากหน้าตั้งค่าโดยตรงผ่าน localStorage
 const STORAGE_KEY = 'mathrunner_settings';
 const savedData = localStorage.getItem(STORAGE_KEY);
-const currentSettings = savedData ? JSON.parse(savedData) : { character: 1 }; // ตัวสำรองเผื่อยังไม่เคยเซฟค่า
+const currentSettings = savedData ? JSON.parse(savedData) : { character: 1 }; 
 
 const boy = document.getElementById('boyRun');
 const girl = document.getElementById('girlRun');
@@ -10,27 +9,25 @@ let positionBoy = -350;
 let positionGirl = -350;
 const screenWidth = window.innerWidth;
 
-// ฟังก์ชันคุมการเปิด/ปิด รูปภาพตามตัวละครที่เลือก
 const currentCharacter = () => {
-    if (currentSettings.character === 1) {       // 1 = หญิง
+    if (currentSettings.character === 1) {       
         boy.style.display = 'none';
         girl.style.display = 'block';
-    } else if (currentSettings.character === 2) { // 2 = ชาย
+    } else if (currentSettings.character === 2) { 
         girl.style.display = 'none';
         boy.style.display = 'block';
     }
 }
 
-// ฟังก์ชันทำแอนิเมชันตัวละครวิ่ง
 const animate = () => {
-    // ให้ขยับเฉพาะตัวละครที่กำลังแสดงผลอยู่
-    if (currentSettings.character === 2) { // ผู้ชายวิ่ง
+    
+    if (currentSettings.character === 2) { 
         boy.style.left = positionBoy + "px";
         positionBoy += 2;
         if (positionBoy > screenWidth) {
             positionBoy = -boy.offsetWidth;  
         }
-    } else { // ผู้หญิงวิ่ง
+    } else { 
         girl.style.left = positionGirl + "px";
         positionGirl += 2;
         if (positionGirl > screenWidth) {
@@ -41,6 +38,5 @@ const animate = () => {
     requestAnimationFrame(animate);
 }
 
-// สั่งเปิดตัวละครที่ถูกต้องและเปิดระบบวิ่งทันที
 currentCharacter();
 animate();

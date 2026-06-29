@@ -52,7 +52,7 @@ body {
   z-index: 0;
 }
 #boyRun  { position: absolute; width: 350px; left: -350px; bottom: 0%; }
-#girlRun { position: absolute; width: 80px;  left: -350px;  bottom: 0%; }
+#girlRun { position: absolute; width: 100px;  left: -350px;  bottom: 0%; }
 
 /* ── Main layout ── */
 .container {

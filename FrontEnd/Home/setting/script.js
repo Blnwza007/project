@@ -1,13 +1,11 @@
 const STORAGE_KEY = 'mathrunner_settings';
 
-// ── ค่าเริ่มต้น ──────────────────────
 const defaults = {
   playerName: '',
-  character: 1, // เริ่มต้นด้วย 1 (ผู้หญิง)
+  character: 1, 
   language: 'th',
 };
 
-// ── โหลดค่าจากเครื่อง ───────────────────
 function loadSettings() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -17,7 +15,6 @@ function loadSettings() {
   }
 }
 
-// ── บันทึกค่าลงเครื่อง ─────────────────────────
 function saveSettings(data) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
@@ -26,7 +23,6 @@ function saveSettings(data) {
   }
 }
 
-// ── Elements ──────────────────────────────
 const nameInput   = document.getElementById('player-name');
 const clearBtn    = document.getElementById('clear-name-btn');
 const nameCount   = document.getElementById('name-count');
@@ -39,12 +35,10 @@ const tabContents = document.querySelectorAll('.tab-content');
 
 let currentSettings = loadSettings();
 
-// ── แสดงผล UI จากค่าที่บันทึกไว้ ───────────
 function initUI() {
   nameInput.value = currentSettings.playerName;
   nameCount.textContent = currentSettings.playerName.length;
 
-  // เช็กตัวละคร: ถ้าค่าคือ 1 เลือกการ์ดหญิง (girl) / ถ้าค่าคือ 2 เลือกการ์ดชาย (boy)
   charCards.forEach(card => {
     const isGirl = (currentSettings.character === 1 && card.dataset.char === 'girl');
     const isBoy  = (currentSettings.character === 2 && card.dataset.char === 'boy');
@@ -56,7 +50,6 @@ function initUI() {
   });
 }
 
-// ── ระบบสลับ Tabs ──────────────────────────
 tabButtons.forEach(button => {
   button.addEventListener('click', () => {
     tabButtons.forEach(btn => btn.classList.remove('active'));
@@ -69,7 +62,6 @@ tabButtons.forEach(button => {
   });
 });
 
-// ── Name input ────────────────────────────
 nameInput.addEventListener('input', () => {
   nameCount.textContent = nameInput.value.length;
 });
@@ -80,20 +72,17 @@ clearBtn.addEventListener('click', () => {
   nameInput.focus();
 });
 
-// ── ตอนคลิกเลือกตัวละคร ──────────────────────
 charCards.forEach(card => {
   card.addEventListener('click', () => {
     charCards.forEach(c => c.classList.remove('selected'));
     card.classList.add('selected');
     
-    // บันทึกเป็นเลข 1 (ผู้หญิง) หรือ 2 (ผู้ชาย)
     currentSettings.character = card.dataset.char === 'girl' ? 1 : 2;
 
     syncRunningCharacter(currentSettings.character);
   });
 });
 
-// ── เลือกภาษา ───────────────────────
 langBtns.forEach(btn => {
   btn.addEventListener('click', () => {
     langBtns.forEach(b => b.classList.remove('selected'));
@@ -102,14 +91,12 @@ langBtns.forEach(btn => {
   });
 });
 
-// ── ปุ่มกด บันทึก ───────────────────────────
 saveBtn.addEventListener('click', () => {
   currentSettings.playerName = nameInput.value.trim();
   saveSettings(currentSettings);
   showToast();
 });
 
-// ── แจ้งเตือน Toast ─────────────────────────────────
 let toastTimer;
 function showToast() {
   clearTimeout(toastTimer);
@@ -117,16 +104,15 @@ function showToast() {
   toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
 }
 
-// ── ตัวละครวิ่งฉากหลังในหน้าตั้งค่า ───────────
 const boy  = document.getElementById('boyRun');
 const girl = document.getElementById('girlRun');
 let posX = -350;
 
 function syncRunningCharacter(charNum) {
-  if (charNum === 2) { // 2 = ผู้ชาย
+  if (charNum === 2) { 
     boy.style.display  = 'block';
     girl.style.display = 'none';
-  } else {             // 1 = ผู้หญิง
+  } else {             
     girl.style.display = 'block';
     boy.style.display  = 'none';
   }
@@ -140,7 +126,6 @@ function animateSetting() {
   requestAnimationFrame(animateSetting);
 }
 
-// เรียกทำงานหน้าตั้งค่า
 initUI();
 syncRunningCharacter(currentSettings.character);
 animateSetting();
