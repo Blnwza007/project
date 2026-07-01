@@ -396,6 +396,7 @@ body {
   .answer-wrap { flex-direction: column; }
   .submit-btn  { width: 100%; }
   .question-text { font-size: 1.1rem; }
+  #menuBtn { width: 100px;}
 }
 
 @media (prefers-reduced-motion: reduce) {

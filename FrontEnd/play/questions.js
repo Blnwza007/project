@@ -258,7 +258,7 @@ const startTimer = () => {
     if (timeLeft <= 0) {
       clearTimer()
       loseLife()
-      advanceLevel()
+      showQuestion()
     }
   }, 1000)
 }
@@ -303,6 +303,7 @@ const checkAnswer = () => {
       input.value = '';
     } else {
       loseLife()
+      showQuestion()
       console.log('kuy')
     }
     return
@@ -323,6 +324,7 @@ const checkAnswer = () => {
   } else {
     console.log('kuy')
     loseLife()
+    showQuestion()
   }
 }
 
