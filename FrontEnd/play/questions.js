@@ -1,4 +1,4 @@
-import { reset, nextLevel, input, submit } from "./script.js"
+import { input, submit, loseLife, resetHearts } from "./script.js"
 import { randomPick, rand, randNeg, shuffle, triples } from "./helperFunc.js"
 
 const raw = localStorage.getItem('mathRunner')
@@ -7,23 +7,28 @@ let currentLevel = Number(states.currentLevel) || 1
 let currentQuestion = null;
 let timerId = null;
 let timeLeft = 30;
-const timerDisplay = document.getElementById('timer');
-const score = document.getElementById('score');
+const timerText = document.getElementById('timerText');
+const timerBar = document.getElementById('timerBar');
+const score = document.getElementById('scoreDisplay');
 
-reset.addEventListener('click', () => {
-    localStorage.removeItem('mathRunner'); 
-    currentLevel = 1;     
-    clearTimer()
-    showQuestion();   
-    console.log(currentLevel); 
-})
+const advanceLevel = () => {
+  currentLevel = Number(currentLevel) + 1
+  const state = { currentLevel }
+  localStorage.setItem('mathRunner', JSON.stringify(state))
+  showQuestion()
+}
 
-nextLevel.addEventListener('click', () => {
-    currentLevel = Number(currentLevel) + 1
-    const state = { currentLevel }
-    localStorage.setItem('mathRunner', JSON.stringify(state))
-    showQuestion()
-});
+const restartGame = () => {
+  localStorage.removeItem('mathRunner')
+  currentLevel = 1
+  score.textContent = '0'
+  clearTimer()
+  resetHearts()
+  document.getElementById('gameOverScreen')?.classList.add('hidden')
+  showQuestion()
+}
+
+document.getElementById('restartBtn')?.addEventListener('click', restartGame)
 
 const genPythagorean = (level) => {
   const maxIndex = Math.min(level, triples.length - 1)
@@ -229,8 +234,13 @@ const clearTimer = () => {
 }
 
 const updateTimerDisplay = () => {
-  if (timerDisplay) {
-    timerDisplay.textContent = `เวลาเหลือ: ${timeLeft}s`
+  if (timerText) {
+    timerText.textContent = String(timeLeft)
+  }
+
+  if (timerBar) {
+    const percent = Math.max(0, (timeLeft / 30) * 100)
+    timerBar.style.width = `${percent}%`
   }
 }
 
@@ -247,7 +257,8 @@ const startTimer = () => {
 
     if (timeLeft <= 0) {
       clearTimer()
-      nextLevel.click()
+      loseLife()
+      advanceLevel()
     }
   }, 1000)
 }
@@ -270,7 +281,9 @@ const showQuestion = () => {
   currentQuestion = { q, ans, type: answerType }
   input.value = ''
   console.log('currentLevel', currentLevel, 'ans', ans)
-  document.getElementById('test').innerText = q
+  document.getElementById('questionDisplay').textContent = q
+  document.getElementById('tierBadge').textContent = `LEVEL ${currentLevel}`
+  document.getElementById('tierDisplay').textContent = currentLevel
   startTimer()
 }
 
@@ -284,11 +297,12 @@ const checkAnswer = () => {
 
   if (currentQuestion.type === 'string') {
     if (rawInput.toLowerCase() === String(currentQuestion.ans).trim().toLowerCase()) {
-      nextLevel.click()
+      score.innerText = `${Number(score.innerText) + 1}`
+      advanceLevel()
       console.log('nice')
       input.value = '';
     } else {
-      alert('ผิด')
+      loseLife()
       console.log('kuy')
     }
     return
@@ -303,15 +317,22 @@ const checkAnswer = () => {
   }
 
   if (userValue === correctValue) {
-    nextLevel.click()
+    score.innerText = `${Number(score.innerText) + 1}`
+    advanceLevel()
     console.log('nice')
   } else {
     console.log('kuy')
-    alert('ผิด')
+    loseLife()
   }
-  score.innerText = `${Number(score.innerText) + 1}`;
 }
 
 submit.addEventListener('click', checkAnswer)
+
+input.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter') {
+    event.preventDefault()
+    checkAnswer()
+  }
+})
 
 showQuestion()

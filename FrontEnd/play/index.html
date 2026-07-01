@@ -1,24 +1,105 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>คิดให้ไววิ่งให้ทัน — Play</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <main class="container">
-        <section class="questions">
-            <div id="test"></div>
-            <div id="timer">เวลาเหลือ: 30s</div>
-        </section>
-        <p id="score">0</p>
-        <input type="text" id="input">
-        <button id="submit">submit</button>
-        <button id="next" style="display: none;">67</button>
-        <button id="reset" style="display: none;">76</button>
-    </main>
-    <script type="module" src="./questions.js"></script>
-    <script type="module" src="./script.js"></script>
+
+  <div class="background">
+    <img src="../picture/Cloud.png" alt="" id="cloud-left" width="280">
+    <img src="../picture/Cloud.png" alt="" id="cloud-right" width="280">
+    <img src="../picture/sun.png"   alt="" id="sun" width="200">
+  </div>
+
+  <div class="run">
+    <img src="../picture/boy_running1.png" alt="" id="boyRun"  width="350" style="display:none;">
+    <img src="../picture/girl_running.png" alt="" id="girlRun" width="80">
+  </div>
+
+  <header class="hud">
+    <div class="hud-block">
+      <span class="hud-label">LEVEL</span>
+      <span class="hud-value" id="tierDisplay">1</span>
+    </div>
+    <div class="hud-block center">
+      <span class="hud-label">คะแนน</span>
+      <span class="hud-value gold" id="scoreDisplay">0</span>
+    </div>
+    <div class="hud-block">
+      <span class="hud-label">ชีวิต</span>
+      <div id="heartsDisplay" class="hearts">
+        <span class="heart">❤️</span>
+        <span class="heart">❤️</span>
+        <span class="heart">❤️</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="play-container">
+
+    <div class="timer-wrap">
+      <div class="timer-bar-outer">
+        <div class="timer-bar-inner" id="timerBar"></div>
+      </div>
+      <span class="timer-text" id="timerText">30</span>
+    </div>
+
+    <div class="question-card" id="questionCard">
+      <div class="q-tier-badge" id="tierBadge">LEVEL 1</div>
+      <div class="question-text" id="questionDisplay">กำลังโหลดโจทย์...</div>
+    </div>
+
+    <div class="streak-wrap" id="streakWrap" style="display:none;">
+      <span class="streak-fire">🔥</span>
+      <span class="streak-text" id="streakText">3 ติดต่อกัน!</span>
+    </div>
+
+    <div class="answer-wrap">
+      <input
+        type="number"
+        id="answerInput"
+        class="answer-input"
+        placeholder="พิมพ์คำตอบ..."
+        autocomplete="off"
+      >
+      <button id="submitAnswer" class="mainbtn submit-btn">ส่งคำตอบ ▶</button>
+    </div>
+
+    <div class="feedback" id="feedback"></div>
+
+  </main>
+
+  <!-- ── GAME OVER overlay ── -->
+  <div class="overlay hidden" id="gameOverScreen">
+    <div class="over-card">
+      <div class="over-emoji" id="overEmoji">💀</div>
+      <h2 class="over-title">หมดชีวิต!</h2>
+      <div class="result-row">
+        <span class="r-label">คะแนน</span>
+        <span class="r-val gold" id="finalScore">0</span>
+      </div>
+      <div class="result-row">
+        <span class="r-label">ตอบถูก</span>
+        <span class="r-val green" id="finalCorrect">0</span>
+      </div>
+      <div class="result-row">
+        <span class="r-label">ถึง Level</span>
+        <span class="r-val" id="finalTier">1</span>
+      </div>
+      <div class="over-btns">
+        <button id="restartBtn" class="mainbtn">เล่นอีกครั้ง</button>
+        <a href="../Home/index.html" id="menuLink"><button id="menuBtn" class="mainbtn secondary" style="width: 300px;">หน้าหลัก</button></a>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./questions.js"></script>
+  <script type="module" src="./script.js"></script>
 </body>
 </html>
