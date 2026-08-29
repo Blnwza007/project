@@ -43,6 +43,13 @@
 
   <main class="play-container">
 
+    <div id="bossEntity" class="boss-img hidden"><img src="../picture/teacher.png" alt=""></div>
+
+    <div class="streak-wrap" id="streakWrap" style="display:none;">
+      <span class="streak-fire">🔥</span>
+      <span class="streak-text" id="streakText">ตอบถูก 3 ข้อติดต่อกัน</span>
+    </div>
+
     <div class="timer-wrap">
       <div class="timer-bar-outer">
         <div class="timer-bar-inner" id="timerBar"></div>
@@ -53,11 +60,6 @@
     <div class="question-card" id="questionCard">
       <div class="q-tier-badge" id="tierBadge">LEVEL 1</div>
       <div class="question-text" id="questionDisplay">กำลังโหลดโจทย์...</div>
-    </div>
-
-    <div class="streak-wrap" id="streakWrap" style="display:none;">
-      <span class="streak-fire">🔥</span>
-      <span class="streak-text" id="streakText">3 ติดต่อกัน!</span>
     </div>
 
     <div class="answer-wrap">

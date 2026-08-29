@@ -24,6 +24,9 @@ const restartGame = () => {
   score.textContent = '0'
   clearTimer()
   resetHearts()
+  currentStreak = 0
+  if (streakWrap) streakWrap.style.display = 'none';
+  input.disabled = false
   document.getElementById('gameOverScreen')?.classList.add('hidden')
   showQuestion()
 }
@@ -51,15 +54,15 @@ const genExponent = (level) => {
     const value = base ** 2
     return { q: `√${value} = ?`, ans: base }
   } else {
-    const exp1 = rand(2, 3)
-    const exp2 = rand(2, 3)
+    const exp1 = rand(2, 5)
+    const exp2 = rand(2, 5)
     return { q: `${base}^${exp1} × ${base}^${exp2} = ?`, ans: (`${base}^${(exp1 + exp2)}`), type: 'string' }
   }
 }
 
 const genInteger = (level) => {
   const type = randomPick(['multiply', 'divide', 'absolute'])
-  const scale = 3 + level * 2
+  const scale = 3 + level
   const a = randNeg(scale)
   const b = randNeg(scale)
 
@@ -86,6 +89,13 @@ const genTier1 = (level) => {
   if (topic === 'integer')     return genInteger(level)
 }
 
+const gcd = (a, b) => {
+  while (b !== 0) {
+    [a, b] = [b, a % b]
+  }
+  return a
+}
+
 const genProportion = (level) => {
   const type = randomPick(['ratio', 'percent'])
 
@@ -101,8 +111,10 @@ const genProportion = (level) => {
   if (type === 'percent') {
     const percents = [10, 15, 20, 25, 30, 40, 50]
     const p   = randomPick(percents)
-    const num = rand(10, 20 + level * 10) * 10  
-    return { q: `${p}% ของ ${num} = ?`, ans: (p / 100) * num }
+    const divisor = 100 / gcd(p, 100)
+    const multiplier = rand(Math.ceil(10 / divisor), Math.floor((20 + level * 10) / divisor))
+    const num = divisor * multiplier
+    return { q: `${p}% ของ ${num} = ?`, ans: (p * num) / 100 }
   }
 }
 
@@ -111,25 +123,28 @@ const genStats = (level) => {
   const size = 5  
 
   if (type === 'mean') {
-    const data = Array.from({ length: size }, () => rand(1, 20))
+    const data = Array.from({ length: size }, () => rand(1, 10))
     const mean = data.reduce((a, b) => a + b, 0) / data.length
     if (!Number.isInteger(mean)) return genStats(level)  
     return { q: `{${data.join(', ')}} → ค่าเฉลี่ยเลขคณิต = ?`, ans: mean }
   }
 
   if (type === 'median') {
-    const data = Array.from({ length: size }, () => rand(1, 20)).sort((a,b) => a - b)
+    const data = Array.from({ length: size }, () => rand(1, 10)).sort((a,b) => a - b)
     const mid  = Math.floor(data.length / 2)
     const median = data[mid]
     return { q: `{${data.join(', ')}} → มัธยฐาน = ?`, ans: median }
   }
 
   if (type === 'mode') {
-    const data  = Array.from({ length: size }, () => rand(1, 15))
-    const modeVal = randomPick(data)
-    data.push(modeVal, modeVal)  
-    const shuffled = shuffle(data)
-    return { q: `{${shuffled.join(', ')}} → ฐานนิยม = ?`, ans: modeVal }
+    const modeVal = rand(1, 5)
+    const others = Array.from({ length: size - 1 }, () => {
+      let v
+      do { v = rand(1, 10) } while (v === modeVal)
+      return v
+    })
+    const data = shuffle([modeVal, modeVal, modeVal, ...others])
+    return { q: `{${data.join(', ')}} → ฐานนิยม = ?`, ans: modeVal }
   }
 }
 
@@ -137,23 +152,31 @@ const genGeometry = (level) => {
   const type = randomPick(['circle', 'triangle', 'cylinder'])
 
   if (type === 'circle') {
-    const r   = rand(1, 5 + Math.floor(level / 3))
-    const ans = Math.round(Math.PI * r * r * 100) / 100  
-    return { q: `วงกลม r=${r} → พื้นที่=? (ปัด 2 ตำแหน่ง)`, ans }
+    // r must be a multiple of 7 so that 22/7 * r^2 and 2*22/7 * r are both integers
+    const multiple = rand(1, 1 + Math.floor(level / 5))
+    const r = 7 * multiple
+    const ask = randomPick(['area', 'circumference'])
+    if (ask === 'area') {
+      const ans = (22 * r * r) / 7   // = 22 * 7 * multiple^2
+      return { q: `วงกลม r=${r} → พื้นที่=? (ใช้ π=22/7)`, ans }
+    } else {
+      const ans = (2 * 22 * r) / 7   // = 2 * 22 * multiple
+      return { q: `วงกลม r=${r} → เส้นรอบวง=? (ใช้ π=22/7)`, ans }
+    }
   }
 
   if (type === 'triangle') {
-    const b   = rand(2, 10 + level) * 2  
-    const h   = rand(2, 10 + level) * 2
+    const b   = rand(2, 5 + level)
+    const h   = 2 * rand(1, Math.floor((5 + level) / 2))
     const ans = (b * h) / 2
     return { q: `สามเหลี่ยม ฐาน=${b} สูง=${h} → พื้นที่=?`, ans }
   }
 
   if (type === 'cylinder') {
-    const r   = rand(1, 5 + Math.floor(level / 5))
-    const h   = rand(1, 10 + level)
-    const ans = Math.round(Math.PI * r * r * h * 100) / 100
-    return { q: `ทรงกระบอก r=${r} h=${h} → ปริมาตร=? (ปัด 2 ตำแหน่ง)`, ans }
+    const r   = rand(1, 3)
+    const h   = 7 * rand(1, 1 + Math.floor(level / 10))
+    const ans = (22 * r * r * h) / 7
+    return { q: `ทรงกระบอก r=${r} h=${h} → ปริมาตร=? (ใช้ π=22/7)`, ans }
   }
 }
 
@@ -226,6 +249,56 @@ const genSystem = (level) => {
   }
 }
 
+const genParabola = (level) => {
+  const type = randomPick(['xIntercept', 'vertex', 'sumRoots'])
+  const scale = 1 + Math.floor((level - 101) / 10)  
+
+  if (type === 'xIntercept') {
+    const r1 = rand(-4 * scale, 4 * scale)
+    const r2 = rand(-4 * scale, 4 * scale)
+    const a  = rand(1, 2 + scale)
+    const b  = -a * (r1 + r2)
+    const c  =  a * (r1 * r2)
+    const bStr = b >= 0 ? `+${b}` : `${b}`
+    const cStr = c >= 0 ? `+${c}` : `${c}`
+    const askRoot = randomPick([r1, r2])
+    return {
+      q: `y = ${a}x²${bStr}x${cStr}\ny = 0 → x ค่าหนึ่ง = ?`,
+      ans: askRoot
+    }
+  }
+
+  if (type === 'vertex') {
+    const r1 = rand(-4 * scale, 4 * scale)
+    const r2 = rand(-4 * scale, 4 * scale)
+    const a  = rand(1, 2 + scale)
+    const b  = -a * (r1 + r2)
+    const c  =  a * (r1 * r2)
+    const vertexX = (r1 + r2) / 2  
+    if (!Number.isInteger(vertexX)) return genParabola(level) 
+    const bStr = b >= 0 ? `+${b}` : `${b}`
+    const cStr = c >= 0 ? `+${c}` : `${c}`
+    return {
+      q: `y = ${a}x²${bStr}x${cStr}\nจุดยอด อยู่ที่ x = ?`,
+      ans: vertexX
+    }
+  }
+
+  if (type === 'sumRoots') {
+    const r1 = rand(-4 * scale, 4 * scale)
+    const r2 = rand(-4 * scale, 4 * scale)
+    const a  = rand(1, 2 + scale)
+    const b  = -a * (r1 + r2)
+    const c  =  a * (r1 * r2)
+    const bStr = b >= 0 ? `+${b}` : `${b}`
+    const cStr = c >= 0 ? `+${c}` : `${c}`
+    return {
+      q: `y = ${a}x²${bStr}x${cStr}\nผลบวกของ root = ?`,
+      ans: r1 + r2
+    }
+  }
+}
+
 const clearTimer = () => {
   if (timerId) {
     clearInterval(timerId)
@@ -239,14 +312,17 @@ const updateTimerDisplay = () => {
   }
 
   if (timerBar) {
-    const percent = Math.max(0, (timeLeft / 30) * 100)
+    const percent = Math.max(0, (timeLeft / maxTime) * 100)
     timerBar.style.width = `${percent}%`
   }
 }
 
-const startTimer = () => {
+let maxTime = 30;
+
+const startTimer = (seconds = 30) => {
   clearTimer()
-  timeLeft = 30
+  timeLeft = seconds
+  maxTime = seconds
   updateTimerDisplay()
   console.log('timer start', timeLeft)
 
@@ -257,24 +333,40 @@ const startTimer = () => {
 
     if (timeLeft <= 0) {
       clearTimer()
-      loseLife()
-      showQuestion()
+      const remaining = loseLife()
+      if (remaining > 0) showQuestion()
     }
   }, 1000)
 }
 
 const showQuestion = () => {
   let question;
-
-  if (currentLevel <= 10) {
-    question = genTier1(currentLevel)
-  } else if (currentLevel <= 25) {
-    question = genTier2(currentLevel)
-  } else if (currentLevel <= 40) {
-    question = genLinear(currentLevel)
-  } else if (currentLevel <= 60) {
-    question = genSystem(currentLevel)
+  const isBoss = currentLevel % 5 === 0;
+  
+  if (isBoss) {
+    document.body.classList.add('boss-active');
+    document.getElementById('bossEntity').classList.remove('hidden');
+    document.getElementById('tierBadge').textContent = `💀 BOSS LEVEL ${currentLevel} 💀`;
+  } else {
+    document.body.classList.remove('boss-active');
+    document.getElementById('bossEntity').classList.add('hidden');
+    document.getElementById('tierBadge').textContent = `LEVEL ${currentLevel}`;
   }
+
+  // Generate slightly harder question for boss
+  const effectiveLevel = isBoss ? currentLevel + 5 : currentLevel;
+
+  if (effectiveLevel <= 10) {
+    question = genTier1(effectiveLevel)
+  } else if (effectiveLevel <= 25) {
+    question = genTier2(effectiveLevel)
+  } else if (effectiveLevel <= 40) {
+    question = genLinear(effectiveLevel)
+  } else if (effectiveLevel <= 60) {
+    question = genSystem(effectiveLevel)
+  } else {
+    question = genParabola(effectiveLevel)
+  } 
 
   const { q, ans } = question
   const answerType = typeof ans === 'string' ? 'string' : 'number'
@@ -282,9 +374,57 @@ const showQuestion = () => {
   input.value = ''
   console.log('currentLevel', currentLevel, 'ans', ans)
   document.getElementById('questionDisplay').textContent = q
-  document.getElementById('tierBadge').textContent = `LEVEL ${currentLevel}`
   document.getElementById('tierDisplay').textContent = currentLevel
-  startTimer()
+  
+  // Boss gets less time
+  startTimer(isBoss ? 15 : 30)
+}
+
+let currentStreak = 0;
+const streakWrap = document.getElementById('streakWrap');
+const streakText = document.getElementById('streakText');
+
+const showFloatingScore = (amount) => {
+  const floatEl = document.createElement('div');
+  floatEl.classList.add('floating-score');
+  floatEl.textContent = `+${amount}`;
+  
+  // Position it near the center/score area
+  const scoreRect = score.getBoundingClientRect();
+  floatEl.style.left = `${scoreRect.left}px`;
+  floatEl.style.top = `${scoreRect.top + 30}px`;
+  
+  document.body.appendChild(floatEl);
+  
+  // Remove after animation (1s)
+  setTimeout(() => floatEl.remove(), 1000);
+}
+
+const handleCorrectAnswer = (basePoints) => {
+  currentStreak++;
+  let totalPoints = basePoints;
+  
+  // Streak Bonus Logic
+  if (currentStreak >= 3) {
+    streakWrap.style.display = 'flex';
+    streakText.textContent = `ตอบถูก ${currentStreak} ข้อติดต่อกัน`;
+    totalPoints += 1; // +1 extra point for being on fire
+  }
+  
+  score.innerText = `${Number(score.innerText) + totalPoints}`;
+  showFloatingScore(totalPoints);
+  
+  advanceLevel();
+  console.log('nice');
+  input.value = '';
+}
+
+const handleWrongAnswer = () => {
+  currentStreak = 0;
+  streakWrap.style.display = 'none';
+  console.log('kuy');
+  const remaining = loseLife();
+  if (remaining > 0) showQuestion();
 }
 
 const checkAnswer = () => {
@@ -294,17 +434,14 @@ const checkAnswer = () => {
   }
 
   const rawInput = input.value.trim()
+  const isBoss = currentLevel % 5 === 0;
+  const points = isBoss ? 5 : 1;
 
   if (currentQuestion.type === 'string') {
     if (rawInput.toLowerCase() === String(currentQuestion.ans).trim().toLowerCase()) {
-      score.innerText = `${Number(score.innerText) + 1}`
-      advanceLevel()
-      console.log('nice')
-      input.value = '';
+      handleCorrectAnswer(points);
     } else {
-      loseLife()
-      showQuestion()
-      console.log('kuy')
+      handleWrongAnswer();
     }
     return
   }
@@ -318,13 +455,9 @@ const checkAnswer = () => {
   }
 
   if (userValue === correctValue) {
-    score.innerText = `${Number(score.innerText) + 1}`
-    advanceLevel()
-    console.log('nice')
+    handleCorrectAnswer(points);
   } else {
-    console.log('kuy')
-    loseLife()
-    showQuestion()
+    handleWrongAnswer();
   }
 }
 
