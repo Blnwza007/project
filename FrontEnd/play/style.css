@@ -393,6 +393,11 @@ body.boss-active {
   background-blend-mode: multiply;
 }
 
+/* ซ่อนครูที่วิ่งตามหลัง ตอนเข้าสู่ด่านบอส */
+body.boss-active #chaserRun {
+  display: none !important;
+}
+
 body.boss-active .question-card {
   border-color: #ff2a2a;
   box-shadow:

@@ -1,4 +1,4 @@
-import { input, submit, loseLife, resetHearts } from "./script.js"
+import { input, submit, loseLife, resetHearts, updateChaserDistance } from "./script.js"
 import { randomPick, rand, randNeg, shuffle, triples } from "./helperFunc.js"
 
 const raw = localStorage.getItem('mathRunner')
@@ -7,6 +7,7 @@ let currentLevel = Number(states.currentLevel) || 1
 let currentQuestion = null;
 let timerId = null;
 let timeLeft = 30;
+let maxTime = 30;
 const timerText = document.getElementById('timerText');
 const timerBar = document.getElementById('timerBar');
 const score = document.getElementById('scoreDisplay');
@@ -152,30 +153,45 @@ const genGeometry = (level) => {
   const type = randomPick(['circle', 'triangle', 'cylinder'])
 
   if (type === 'circle') {
-    // r must be a multiple of 7 so that 22/7 * r^2 and 2*22/7 * r are both integers
-    const multiple = rand(1, 1 + Math.floor(level / 5))
-    const r = 7 * multiple
     const ask = randomPick(['area', 'circumference'])
+    let multiple;
+    
     if (ask === 'area') {
-      const ans = (22 * r * r) / 7   // = 22 * 7 * multiple^2
+      multiple = 1; 
+    } else {
+      multiple = rand(1, Math.min(10, 1 + Math.floor(level / 3)))
+    }
+    
+    const r = 7 * multiple
+    if (ask === 'area') {
+      const ans = (22 * r * r) / 7
       return { q: `วงกลม r=${r} → พื้นที่=? (ใช้ π=22/7)`, ans }
     } else {
-      const ans = (2 * 22 * r) / 7   // = 2 * 22 * multiple
+      const ans = (2 * 22 * r) / 7
       return { q: `วงกลม r=${r} → เส้นรอบวง=? (ใช้ π=22/7)`, ans }
     }
   }
 
   if (type === 'triangle') {
-    const b   = rand(2, 5 + level)
-    const h   = 2 * rand(1, Math.floor((5 + level) / 2))
-    const ans = (b * h) / 2
+    let b, h, ans;
+    do {
+      b = rand(2, Math.min(30, 5 + level))
+      h = 2 * rand(1, Math.min(15, Math.floor((5 + level) / 2)))
+      ans = (b * h) / 2
+    } while (ans > 500)
+    
     return { q: `สามเหลี่ยม ฐาน=${b} สูง=${h} → พื้นที่=?`, ans }
   }
 
   if (type === 'cylinder') {
-    const r   = rand(1, 3)
-    const h   = 7 * rand(1, 1 + Math.floor(level / 10))
-    const ans = (22 * r * r * h) / 7
+    let r, h_mult, h, ans;
+    do {
+      r = rand(1, 3)
+      h_mult = rand(1, Math.min(5, 1 + Math.floor(level / 10)))
+      h = 7 * h_mult
+      ans = (22 * r * r * h) / 7
+    } while (ans > 500)
+    
     return { q: `ทรงกระบอก r=${r} h=${h} → ปริมาตร=? (ใช้ π=22/7)`, ans }
   }
 }
@@ -311,13 +327,16 @@ const updateTimerDisplay = () => {
     timerText.textContent = String(timeLeft)
   }
 
+  const percent = Math.max(0, (timeLeft / maxTime));
   if (timerBar) {
-    const percent = Math.max(0, (timeLeft / maxTime) * 100)
-    timerBar.style.width = `${percent}%`
+    timerBar.style.width = `${percent * 100}%`
+  }
+  
+  // อัปเดตระยะห่างของตัววิ่งไล่
+  if (typeof updateChaserDistance === 'function') {
+      updateChaserDistance(percent);
   }
 }
-
-let maxTime = 30;
 
 const startTimer = (seconds = 30) => {
   clearTimer()

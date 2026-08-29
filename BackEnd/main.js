@@ -13,13 +13,26 @@ const PORT = process.env.PORT || 3000;
 mongoose.connect(process.env.MONGODB_URI, {
     tlsAllowInvalidCertificates: true
 })
-.then (()=> {
+.then(async () => {
     console.log("Conected to Mongodb");
+
+    try {
+        const collection = mongoose.connection.collection("users");
+        const indexes = await collection.indexes();
+        for (const idx of indexes) {
+            if (idx.name !== "_id_") {
+                await collection.dropIndex(idx.name);
+                console.log(`ลบ index เก่า "${idx.name}" สำเร็จ`);
+            }
+        }
+    } catch (e) {
+        console.log("dropIndex error:", e.message);
+    }
 }).catch ((error) => {
     console.log("Conected failed", error);
 })
 
-app.use("/user", userRouter);
+app.use("/users", userRouter);
 
 app.listen(PORT,() => {
     console.log(`Sever running on port${PORT}`);
