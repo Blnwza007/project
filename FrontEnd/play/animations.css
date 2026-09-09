@@ -36,3 +36,74 @@
   20%  { transform: translateY(-10px) scale(1.2); opacity: 1; }
   100% { transform: translateY(-60px) scale(1); opacity: 0; }
 }
+
+/* ── Boss Countdown ── */
+@keyframes countdownPop {
+  0%   { transform: scale(0.3); opacity: 0; }
+  60%  { transform: scale(1.3); opacity: 1; }
+  80%  { transform: scale(0.95); }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes countdownFadeOut {
+  0%   { transform: scale(1); opacity: 1; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+@keyframes mathSymbolFloat {
+  0%   { transform: translateY(0) rotate(0deg);   opacity: 0; }
+  15%  { opacity: 0.7; }
+  85%  { opacity: 0.5; }
+  100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
+}
+@keyframes bossTextIn {
+  0%   { letter-spacing: -0.5em; opacity: 0; transform: scaleX(0.3); }
+  100% { letter-spacing: 0.15em; opacity: 1; transform: scaleX(1); }
+}
+
+/* ── Boss Taunt ── */
+@keyframes tauntIn {
+  0%   { transform: translateX(120%) scale(0.6); opacity: 0; }
+  60%  { transform: translateX(-8%) scale(1.05); opacity: 1; }
+  100% { transform: translateX(0) scale(1); opacity: 1; }
+}
+@keyframes tauntOut {
+  0%   { transform: translateX(0); opacity: 1; }
+  100% { transform: translateX(120%); opacity: 0; }
+}
+
+/* ── Math Rain (victory) ── */
+@keyframes mathRainDrop {
+  0%   { transform: translateY(-60px) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(110vh) rotate(720deg); opacity: 0.3; }
+}
+@keyframes bossVictorySymbol {
+  0%   { transform: translate(0,0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--vx), var(--vy)) scale(0) rotate(540deg); opacity: 0; }
+}
+
+/* ── Explosion effect ── */
+@keyframes explodeChar {
+  0%   { transform: scale(1); opacity: 1; filter: brightness(1); }
+  30%  { transform: scale(1.4); opacity: 1; filter: brightness(3); }
+  100% { transform: scale(0); opacity: 0; filter: brightness(5); }
+}
+
+@keyframes explodeParticle {
+  0%   { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--px), var(--py)) scale(0); opacity: 0; }
+}
+
+.exploding {
+  animation: explodeChar 0.5s ease-out forwards !important;
+}
+
+.explosion-particle {
+  position: absolute;
+  width: var(--size);
+  height: var(--size);
+  background: var(--color);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 999;
+  animation: explodeParticle 0.7s ease-out forwards;
+  animation-delay: var(--delay);
+}

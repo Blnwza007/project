@@ -1,4 +1,4 @@
-import { input, submit, loseLife, resetHearts, updateChaserDistance } from "./script.js"
+import { input, submit, loseLife, resetHearts, updateChaserDistance, playLanguage, playText } from "./script.js?v=5"
 import { randomPick, rand, randNeg, shuffle, triples } from "./helperFunc.js"
 
 const raw = localStorage.getItem('mathRunner')
@@ -11,6 +11,21 @@ let maxTime = 30;
 const timerText = document.getElementById('timerText');
 const timerBar = document.getElementById('timerBar');
 const score = document.getElementById('scoreDisplay');
+
+const translateQuestion = (question) => {
+  if (playLanguage !== 'en') return question;
+
+  const translations = [
+    ['วงกลม', 'Circle'], ['พื้นที่', 'area'], ['เส้นรอบวง', 'circumference'],
+    ['สามเหลี่ยม', 'Triangle'], ['ฐาน', 'base'], ['สูง', 'height'],
+    ['ทรงกระบอก', 'Cylinder'], ['ปริมาตร', 'volume'], ['ค่าเฉลี่ยเลขคณิต', 'mean'],
+    ['มัธยฐาน', 'median'], ['ฐานนิยม', 'mode'], ['ผลบวกของ root', 'sum of roots'],
+    ['จุดยอด อยู่ที่', 'vertex at'], ['ค่าหนึ่ง', 'one root'], ['ของ', 'of'],
+    ['ใช้', 'use'], ['ด่านบอส!', 'BOSS LEVEL!']
+  ];
+
+  return translations.reduce((text, [thai, english]) => text.replaceAll(thai, english), question);
+};
 
 const advanceLevel = () => {
   currentLevel = Number(currentLevel) + 1
@@ -26,13 +41,26 @@ const restartGame = () => {
   clearTimer()
   resetHearts()
   currentStreak = 0
+  _wasJustBoss = false;
+  hideBossTaunt();
   if (streakWrap) streakWrap.style.display = 'none';
   input.disabled = false
   document.getElementById('gameOverScreen')?.classList.add('hidden')
   showQuestion()
 }
 
-document.getElementById('restartBtn')?.addEventListener('click', restartGame)
+const resetProgress = () => {
+  localStorage.removeItem('mathRunner');
+  currentLevel = 1;
+  if (score) score.textContent = '0';
+  clearTimer();
+  resetHearts();
+};
+
+document.getElementById('restartBtn')?.addEventListener('click', restartGame);
+document.getElementById('homeBtn')?.addEventListener('click', resetProgress);
+document.getElementById('menuBtn')?.addEventListener('click', resetProgress);
+document.getElementById('menuLink')?.addEventListener('click', resetProgress);
 
 const genPythagorean = (level) => {
   const maxIndex = Math.min(level, triples.length - 1)
@@ -122,19 +150,22 @@ const genProportion = (level) => {
 const genStats = (level) => {
   const type = randomPick(['mean', 'median', 'mode'])
   const size = 5  
+  const labels = playLanguage === 'en'
+    ? { mean: 'mean', median: 'median', mode: 'mode' }
+    : { mean: 'ค่าเฉลี่ยเลขคณิต', median: 'มัธยฐาน', mode: 'ฐานนิยม' }
 
   if (type === 'mean') {
     const data = Array.from({ length: size }, () => rand(1, 10))
     const mean = data.reduce((a, b) => a + b, 0) / data.length
     if (!Number.isInteger(mean)) return genStats(level)  
-    return { q: `{${data.join(', ')}} → ค่าเฉลี่ยเลขคณิต = ?`, ans: mean }
+    return { q: `{${data.join(', ')}} → ${labels.mean} = ?`, ans: mean }
   }
 
   if (type === 'median') {
     const data = Array.from({ length: size }, () => rand(1, 10)).sort((a,b) => a - b)
     const mid  = Math.floor(data.length / 2)
     const median = data[mid]
-    return { q: `{${data.join(', ')}} → มัธยฐาน = ?`, ans: median }
+    return { q: `{${data.join(', ')}} → ${labels.median} = ?`, ans: median }
   }
 
   if (type === 'mode') {
@@ -145,7 +176,7 @@ const genStats = (level) => {
       return v
     })
     const data = shuffle([modeVal, modeVal, modeVal, ...others])
-    return { q: `{${data.join(', ')}} → ฐานนิยม = ?`, ans: modeVal }
+    return { q: `{${data.join(', ')}} → ${labels.mode} = ?`, ans: modeVal }
   }
 }
 
@@ -358,45 +389,254 @@ const startTimer = (seconds = 30) => {
   }, 1000)
 }
 
+// ── Boss FX ────────────────────────────────────────────────────────────────
+
+const STORAGE_KEY_SETTINGS = 'mathrunner_settings';
+const _settingsRaw = localStorage.getItem(STORAGE_KEY_SETTINGS);
+const _settings = _settingsRaw ? JSON.parse(_settingsRaw) : { language: 'th' };
+const bossLang = (_settings.language === 'en') ? 'en' : 'th';
+
+const BOSS_TAUNT_LINES = {
+  th: {
+    start: ['ง่ายจัง!', 'มาเลย ถ้ากล้า!', '∑ นี่ยากไปไหมล่ะ?', 'เวลามีนิดเดียว...', 'π ≈ 3.14 จำได้ไหม?', 'คิดช้าแพ้แล้ว!', '∞ คะแนนไม่มีหรอก!'],
+    wrong: ['ผิดอีกแล้ว!', 'แย่จัง~', 'ง่ายขนาดนี้ยังทำไม่ได้?', 'x ≠ คำตอบของเธอ!', 'ลองใหม่... ถ้ายังมีเวลา', 'ha! ผิด!', '∆ความรู้ = 0?'],
+  },
+  en: {
+    start: ['Too easy!', 'Come on, if you dare!', 'Can you solve ∑?', 'Tick tock...', 'π ≈ 3.14, know it?', 'Think faster!', '∞ score? Not for you!'],
+    wrong: ['Wrong again!', 'Pathetic~', "Can't solve this easy one?", 'x ≠ your answer!', 'Try again... if you have time', 'ha! Wrong!', '∆knowledge = 0?'],
+  }
+};
+
+const MATH_SYMBOLS = ['∑', 'π', '∞', '√', 'Δ', '∫', '±', '×', '÷', 'θ', 'α', 'β', 'λ', '≠', '≈', '∂', '∇', '∈', '∏', 'φ'];
+const MATH_EQUATIONS = ['2+2=4', 'x²+y²=r²', 'E=mc²', 'a²+b²=c²', 'f(x)=ax+b', '∑n=n(n+1)/2', 'sinθ/cosθ=tanθ', 'πr²', '∫f(x)dx', 'y=mx+c'];
+
+let tauntTimer = null;
+const bossTauntEl = document.getElementById('bossTaunt');
+const bossTauntText = document.getElementById('bossTauntText');
+
+const showBossTaunt = (type = 'start') => {
+  if (!bossTauntEl) return;
+  if (tauntTimer) clearTimeout(tauntTimer);
+
+  const lines = BOSS_TAUNT_LINES[bossLang][type];
+  const line = lines[Math.floor(Math.random() * lines.length)];
+  bossTauntText.textContent = line;
+
+  bossTauntEl.classList.remove('hidden', 'leaving');
+  // Force reflow so animation restarts
+  void bossTauntEl.offsetWidth;
+
+  tauntTimer = setTimeout(() => {
+    bossTauntEl.classList.add('leaving');
+    bossTauntEl.addEventListener('animationend', () => {
+      bossTauntEl.classList.add('hidden');
+      bossTauntEl.classList.remove('leaving');
+    }, { once: true });
+  }, 2800);
+};
+
+const hideBossTaunt = () => {
+  if (tauntTimer) clearTimeout(tauntTimer);
+  bossTauntEl?.classList.add('hidden');
+  bossTauntEl?.classList.remove('leaving');
+};
+
+// Math symbol rain background during countdown
+const spawnCountdownSymbols = (container) => {
+  const symbols = [...MATH_SYMBOLS];
+  for (let i = 0; i < 18; i++) {
+    const el = document.createElement('span');
+    el.classList.add('countdown-math-symbol');
+    el.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+    const size = 1.2 + Math.random() * 3;
+    const dur = 3 + Math.random() * 3;
+    const delay = Math.random() * 2;
+    el.style.cssText = `
+      left: ${Math.random() * 100}%;
+      --sym-size: ${size}rem;
+      --sym-dur: ${dur}s;
+      --sym-delay: ${delay}s;
+    `;
+    container.appendChild(el);
+  }
+};
+
+// Boss Victory — symbols burst out from boss image + equation rain
+const triggerBossVictory = () => {
+  const bossImg = document.getElementById('bossEntity');
+  if (bossImg) {
+    const rect = bossImg.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+
+    for (let i = 0; i < 14; i++) {
+      const el = document.createElement('span');
+      el.classList.add('boss-victory-symbol');
+      el.textContent = MATH_SYMBOLS[Math.floor(Math.random() * MATH_SYMBOLS.length)];
+      const angle = (Math.PI * 2 * i) / 14 + Math.random() * 0.4;
+      const dist = 80 + Math.random() * 140;
+      const vx = Math.cos(angle) * dist;
+      const vy = Math.sin(angle) * dist;
+      const size = 1.2 + Math.random() * 2;
+      el.style.cssText = `
+        left: ${cx}px; top: ${cy}px;
+        --vx: ${vx}px; --vy: ${vy}px;
+        --vs-color: ${['#ffc700','#ff5252','#64ffda','#fff','#ff8c00'][i % 5]};
+        --vs-size: ${size}rem;
+        --vs-delay: ${Math.random() * 0.15}s;
+      `;
+      document.body.appendChild(el);
+      el.addEventListener('animationend', () => el.remove());
+    }
+  }
+
+  // Equation rain
+  const rainItems = [...MATH_EQUATIONS, ...MATH_SYMBOLS];
+  for (let i = 0; i < 22; i++) {
+    const el = document.createElement('span');
+    el.classList.add('math-rain-symbol');
+    el.textContent = rainItems[Math.floor(Math.random() * rainItems.length)];
+    const dur = 1.2 + Math.random() * 1.5;
+    const delay = Math.random() * 1.5;
+    const size = 1 + Math.random() * 1.8;
+    el.style.cssText = `
+      left: ${Math.random() * 100}%;
+      --rain-color: ${['#ffc700','#ff5252','#64ffda','#fff176','#ce93d8'][i % 5]};
+      --rain-size: ${size}rem;
+      --rain-dur: ${dur}s;
+      --rain-delay: ${delay}s;
+    `;
+    document.body.appendChild(el);
+    el.addEventListener('animationend', () => el.remove());
+  }
+};
+
+// Boss Countdown (3...2...1...BOSS!) — returns Promise that resolves when done
+const runBossCountdown = () => new Promise((resolve) => {
+  const overlay = document.getElementById('bossCountdown');
+  const numEl   = document.getElementById('bossCountdownNum');
+  const labelEl = document.getElementById('bossCountdownLabel');
+  const bgEl    = document.getElementById('bossCountdownBg');
+
+  if (!overlay) { resolve(); return; }
+
+  // Spawn math symbols in background
+  bgEl.innerHTML = '';
+  spawnCountdownSymbols(bgEl);
+
+  overlay.classList.remove('hidden');
+  let count = 3;
+
+  const step = () => {
+    if (count > 0) {
+      // Force re-trigger animation by cloning
+      numEl.style.animation = 'none';
+      void numEl.offsetWidth;
+      numEl.style.animation = '';
+      numEl.textContent = String(count);
+      labelEl.textContent = '';
+      count--;
+      setTimeout(step, 900);
+    } else {
+      // Show "BOSS!"
+      numEl.style.animation = 'none';
+      void numEl.offsetWidth;
+      numEl.style.animation = '';
+      numEl.innerHTML = `<svg class="boss-countdown-skull" viewBox="0 0 40 40" width="100" height="100" fill="none">
+        <path d="M8 18C8 10.5 13.5 5 20 5s12 5.5 12 13c0 5-2.5 9-5 11v6H13v-6c-2.5-2-5-6-5-11z" fill="#FF2A2A" stroke="#000" stroke-width="2.5" stroke-linejoin="round"/>
+        <circle cx="14" cy="17" r="3.5" fill="#1A0000"/>
+        <circle cx="26" cy="17" r="3.5" fill="#1A0000"/>
+        <path d="M20 21l-1.5 3h3L20 21z" fill="#1A0000"/>
+        <path d="M16 29v6M20 29v6M24 29v6" stroke="#000" stroke-width="2"/>
+      </svg>`;
+      numEl.style.fontSize = '';
+
+      labelEl.style.animation = 'none';
+      void labelEl.offsetWidth;
+      labelEl.style.animation = '';
+      labelEl.textContent = bossLang === 'en' ? 'BOSS LEVEL!' : 'ด่านบอส!';
+
+      setTimeout(() => {
+        // Fade out overlay
+        overlay.style.transition = 'opacity 0.4s';
+        overlay.style.opacity = '0';
+        setTimeout(() => {
+          overlay.classList.add('hidden');
+          overlay.style.opacity = '';
+          overlay.style.transition = '';
+          numEl.innerHTML = '';
+          bgEl.innerHTML = '';
+          resolve();
+        }, 400);
+      }, 900);
+    }
+  };
+
+  step();
+});
+
+// Track if current level was a boss (so we can show victory on advance)
+let _wasJustBoss = false;
+
 const showQuestion = () => {
   let question;
   const isBoss = currentLevel % 5 === 0;
-  
+
+  const _renderQuestion = () => {
+    // Generate slightly harder question for boss
+    const effectiveLevel = isBoss ? currentLevel + 5 : currentLevel;
+
+    if (effectiveLevel <= 10) {
+      question = genTier1(effectiveLevel)
+    } else if (effectiveLevel <= 25) {
+      question = genTier2(effectiveLevel)
+    } else if (effectiveLevel <= 40) {
+      question = genLinear(effectiveLevel)
+    } else if (effectiveLevel <= 60) {
+      question = genSystem(effectiveLevel)
+    } else {
+      question = genParabola(effectiveLevel)
+    }
+
+    const { q, ans } = question
+    const displayQuestion = translateQuestion(q)
+    const answerType = typeof ans === 'string' ? 'string' : 'number'
+    currentQuestion = { q, ans, type: answerType }
+    input.value = ''
+    console.log('currentLevel', currentLevel, 'ans', ans)
+    document.getElementById('questionDisplay').textContent = displayQuestion
+    document.getElementById('tierDisplay').textContent = currentLevel
+
+    // Boss gets less time
+    startTimer(isBoss ? 15 : 30)
+
+    // Show boss taunt on level start
+    if (isBoss) setTimeout(() => showBossTaunt('start'), 300);
+  };
+
   if (isBoss) {
+    // Only show countdown if this is a NEW boss level (not re-showing after wrong answer)
+    const isNewBoss = !_wasJustBoss;
+    _wasJustBoss = true;
+
     document.body.classList.add('boss-active');
     document.getElementById('bossEntity').classList.remove('hidden');
-    document.getElementById('tierBadge').textContent = `💀 BOSS LEVEL ${currentLevel} 💀`;
+    document.getElementById('tierBadge').textContent = playText.boss(currentLevel);
+
+    if (isNewBoss) {
+      clearTimer(); // pause timer during countdown
+      runBossCountdown().then(_renderQuestion);
+    } else {
+      _renderQuestion();
+    }
   } else {
+    _wasJustBoss = false;
     document.body.classList.remove('boss-active');
     document.getElementById('bossEntity').classList.add('hidden');
-    document.getElementById('tierBadge').textContent = `LEVEL ${currentLevel}`;
+    document.getElementById('tierBadge').textContent = playText.levelBadge(currentLevel);
+    hideBossTaunt();
+    _renderQuestion();
   }
-
-  // Generate slightly harder question for boss
-  const effectiveLevel = isBoss ? currentLevel + 5 : currentLevel;
-
-  if (effectiveLevel <= 10) {
-    question = genTier1(effectiveLevel)
-  } else if (effectiveLevel <= 25) {
-    question = genTier2(effectiveLevel)
-  } else if (effectiveLevel <= 40) {
-    question = genLinear(effectiveLevel)
-  } else if (effectiveLevel <= 60) {
-    question = genSystem(effectiveLevel)
-  } else {
-    question = genParabola(effectiveLevel)
-  } 
-
-  const { q, ans } = question
-  const answerType = typeof ans === 'string' ? 'string' : 'number'
-  currentQuestion = { q, ans, type: answerType }
-  input.value = ''
-  console.log('currentLevel', currentLevel, 'ans', ans)
-  document.getElementById('questionDisplay').textContent = q
-  document.getElementById('tierDisplay').textContent = currentLevel
-  
-  // Boss gets less time
-  startTimer(isBoss ? 15 : 30)
 }
 
 let currentStreak = 0;
@@ -426,12 +666,19 @@ const handleCorrectAnswer = (basePoints) => {
   // Streak Bonus Logic
   if (currentStreak >= 3) {
     streakWrap.style.display = 'flex';
-    streakText.textContent = `ตอบถูก ${currentStreak} ข้อติดต่อกัน`;
+    streakText.textContent = playText.streak(currentStreak);
     totalPoints += 1; // +1 extra point for being on fire
   }
   
   score.innerText = `${Number(score.innerText) + totalPoints}`;
   showFloatingScore(totalPoints);
+
+  // Boss victory FX before advancing
+  const justBeatenBoss = currentLevel % 5 === 0;
+  if (justBeatenBoss) {
+    hideBossTaunt();
+    triggerBossVictory();
+  }
   
   advanceLevel();
   console.log('nice');
@@ -442,6 +689,10 @@ const handleWrongAnswer = () => {
   currentStreak = 0;
   streakWrap.style.display = 'none';
   console.log('kuy');
+  // Show boss wrong taunt if in boss level
+  if (currentLevel % 5 === 0) {
+    showBossTaunt('wrong');
+  }
   const remaining = loseLife();
   if (remaining > 0) showQuestion();
 }

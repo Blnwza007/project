@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>กระดานอันดับ — Math Runner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700;800&family=Kanit:wght@400;500;600;700&family=Russo+One&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="background">
+    <img src="../../picture/Cloud.png" alt="" id="cloud-left" width="280">
+    <img src="../../picture/Cloud.png" alt="" id="cloud-right" width="280">
+    <img src="../../picture/sun.png"   alt="" id="sun" width="200">
+  </div>
+
+  <main class="lb-container">
+
+    <div class="lb-header">
+      <a href="../index.html" class="back-btn" id="lbBackBtn">← กลับ</a>
+      <h1 class="lb-title" id="lbTitle">กระดานอันดับ</h1>
+      <div class="lb-subtitle" id="lbSubtitle">Math Runner</div>
+    </div>
+
+    <div class="lb-card">
+
+      <div class="lb-state" id="lbLoading">
+        <div class="lb-spinner"></div>
+        <p id="lbLoadingText">กำลังโหลด...</p>
+      </div>
+
+      <div class="lb-state hidden" id="lbEmpty">
+        <div class="lb-empty-icon">
+          <svg width="60" height="60" viewBox="0 0 24 24" fill="none">
+            <rect x="4" y="4" width="16" height="16" rx="3" stroke="#888" stroke-width="2"/>
+            <path d="M8 9h8M8 13h6M8 17h4" stroke="#888" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <p id="lbEmptyText">ยังไม่มีข้อมูลในกระดานนี้</p>
+      </div>
+
+      <div class="lb-state hidden" id="lbError">
+        <div class="lb-empty-icon">
+          <svg width="60" height="60" viewBox="0 0 24 24" fill="none">
+            <path d="M12 3L2 21h20L12 3z" fill="#FFE082" stroke="#FF8F00" stroke-width="2" stroke-linejoin="round"/>
+            <path d="M12 9v5M12 17v1.5" stroke="#D84315" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <p id="lbErrorMsg">เกิดข้อผิดพลาด กรุณาลองใหม่</p>
+        <button class="mainbtn retry-btn" id="retryBtn">ลองใหม่</button>
+      </div>
+
+      <div class="lb-podium hidden" id="lbPodium">
+        <div class="podium-slot" id="podium2nd">
+          <div class="podium-avatar" id="avatar2"></div>
+          <div class="podium-name" id="name2">—</div>
+          <div class="podium-score" id="score2">0</div>
+          <div class="podium-block silver">2</div>
+        </div>
+        <div class="podium-slot first" id="podium1st">
+          <div class="podium-crown">
+            <svg class="crown-icon" viewBox="0 0 48 40" width="44" height="36" fill="none">
+              <!-- Crown Base Band -->
+              <rect x="8" y="30" width="32" height="6" rx="2" fill="#D85718" stroke="#000" stroke-width="2"/>
+              <!-- Base Gems -->
+              <circle cx="14" cy="33" r="1.5" fill="#FFF"/>
+              <circle cx="24" cy="33" r="1.8" fill="#64FFDA"/>
+              <circle cx="34" cy="33" r="1.5" fill="#FFF"/>
+              <!-- Crown Body -->
+              <path d="M9 30 L9 15 L18 22 L24 8 L30 22 L39 15 L39 30 Z" fill="#FFC700" stroke="#000" stroke-width="2" stroke-linejoin="round"/>
+              <!-- Inner Gold Highlight -->
+              <path d="M12 28 L11 18 L17 23 L24 13 L31 23 L37 18 L36 28 Z" fill="#FFE066"/>
+              <!-- Top Jewels -->
+              <circle cx="9" cy="14" r="3" fill="#FF5252" stroke="#000" stroke-width="1.5"/>
+              <circle cx="24" cy="7" r="3.5" fill="#64FFDA" stroke="#000" stroke-width="1.8"/>
+              <circle cx="39" cy="14" r="3" fill="#FF5252" stroke="#000" stroke-width="1.5"/>
+              <!-- Center Emblem -->
+              <path d="M24 19 L26.5 23 L24 27 L21.5 23 Z" fill="#FF5252" stroke="#000" stroke-width="1"/>
+            </svg>
+          </div>
+          <div class="podium-avatar" id="avatar1"></div>
+          <div class="podium-name" id="name1">—</div>
+          <div class="podium-score" id="score1">0</div>
+          <div class="podium-block gold">1</div>
+        </div>
+        <div class="podium-slot" id="podium3rd">
+          <div class="podium-avatar" id="avatar3"></div>
+          <div class="podium-name" id="name3">—</div>
+          <div class="podium-score" id="score3">0</div>
+          <div class="podium-block bronze">3</div>
+        </div>
+      </div>
+
+      <div class="lb-table-wrap hidden" id="lbTableWrap">
+        <table class="lb-table">
+          <thead>
+            <tr>
+              <th class="col-rank" id="thRank">อันดับ</th>
+              <th class="col-name" id="thName">ชื่อผู้เล่น</th>
+              <th class="col-score" id="thScore">คะแนน</th>
+              <th class="col-level" id="thLevel">Level</th>
+            </tr>
+          </thead>
+          <tbody id="lbTableBody"></tbody>
+        </table>
+      </div>
+
+    </div>
+
+    <div class="my-rank hidden" id="myRank">
+      <span class="my-rank-label" id="myRankLabel">อันดับของคุณ</span>
+      <span class="my-rank-num" id="myRankNum">#—</span>
+      <span class="my-rank-score" id="myRankScore">0 คะแนน</span>
+    </div>
+
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

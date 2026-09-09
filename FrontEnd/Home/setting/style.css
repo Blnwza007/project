@@ -178,7 +178,22 @@ body {
   border-radius: 2px;
   box-shadow: inset 0 2px 0 rgba(255,255,255,0.1);
 }
-.label-icon { font-size: 16px; }
+.label-icon { 
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 8px;
+}
+.lang-flag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.flag-svg {
+  display: block;
+  border-radius: 2px;
+  border: 1px solid rgba(0,0,0,0.4);
+}
 .label-text {
   font-size: 18px; 
   color: #ffc700; 
@@ -244,11 +259,11 @@ body {
   background: #ffd966; border-color: #d85718;
   box-shadow: 4px 0 0 0 #d85718, -4px 0 0 0 #d85718, 0  4px 0 0 #d85718, 0 -4px 0 0 #d85718;
 }
-.char-preview { width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; }
-.char-preview img { width: 56px; height: 56px; object-fit: contain; image-rendering: pixelated; }
+.char-preview { width: 30px; height: 56px; display: flex; align-items: center; justify-content: center; }
+.char-preview img { width: 100px; height: 56px; object-fit: contain; image-rendering: pixelated; }
 .char-name {  font-size: 14px; color: #3a2000; }
 .char-name-en { font-size: 9px; font-weight: 700; color: #a07040; letter-spacing: 1px; }
-.selected-badge { position: absolute; top: 4px; right: 6px; font-size: 12px; color: #d85718; font-weight: 900; opacity: 0; }
+.selected-badge { position: absolute; top: 5px; right: 6px; display: flex; align-items: center; justify-content: center; opacity: 0; }
 .char-card.selected .selected-badge { opacity: 1; }
 
 /* ── Language ── */

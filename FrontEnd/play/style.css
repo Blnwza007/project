@@ -78,6 +78,36 @@ body {
   border-bottom: 3px solid #d85718;
 }
 
+/* Home button in HUD */
+.home-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Kanit', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #fff;
+  text-decoration: none;
+  background: rgba(0, 0, 0, 0.45);
+  border: 2px solid #fff;
+  border-radius: 6px;
+  padding: 5px 12px;
+  transition: all 0.2s;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.home-btn:hover {
+  background: #d85718;
+  border-color: #d85718;
+  transform: translateY(-1px);
+}
+.home-btn:active {
+  transform: translateY(1px);
+}
+.home-btn svg {
+  display: block;
+}
+
 .hud-block {
   display: flex;
   flex-direction: column;
@@ -102,9 +132,10 @@ body {
 }
 .hud-value.gold { color: #ffc700; }
 
-.hearts { display: flex; gap: 3px; }
-.heart  { font-size: 1.2rem; transition: all 0.2s; }
-.heart.lost { filter: grayscale(1) opacity(0.3); transform: scale(0.8); }
+.hearts { display: flex; gap: 5px; align-items: center; }
+.heart  { display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s; }
+.heart-svg { display: block; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.4)); }
+.heart-svg.lost { filter: grayscale(1) opacity(0.35); }
 
 /* ── Main play area ── */
 .play-container {
@@ -212,7 +243,8 @@ body {
   pointer-events: none;
   animation: streakPop 0.4s cubic-bezier(0.34,1.56,0.64,1);
 }
-.streak-fire { font-size: 1.4rem; }
+.streak-fire { display: inline-flex; align-items: center; justify-content: center; }
+.fire-svg { display: block; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3)); animation: pulse 1.2s infinite ease-in-out; }
 .streak-text {
   
   font-size: 0.9rem;
@@ -332,7 +364,16 @@ body {
    -6px  0px 0 #000, 6px  0px 0 #000;
   animation: cardIn 0.4s cubic-bezier(0.34,1.56,0.64,1);
 }
-.over-emoji { font-size: 3rem; margin-bottom: 6px; }
+.over-emoji { 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  margin-bottom: 8px; 
+}
+.over-skull-icon { 
+  display: block; 
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.35)); 
+}
 .over-title {
   font-family: 'Pixellet', sans-serif;
   font-size: 1.8rem;
@@ -374,6 +415,8 @@ body {
 
 /* ── Responsive ── */
 @media (max-width: 480px) {
+  .home-btn { padding: 6px 8px; }
+  .home-btn-text { display: none; }
   .answer-wrap { flex-direction: column; }
   .submit-btn  { width: 100%; }
   .question-text { font-size: 1.1rem; }
@@ -449,4 +492,105 @@ body.boss-active .timer-bar-inner {
   pointer-events: none;
   z-index: 100;
   animation: floatUp 1s ease-out forwards;
+}
+
+/* ── Boss Countdown Overlay ── */
+.boss-countdown {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(30, 0, 0, 0.85);
+  backdrop-filter: blur(6px);
+}
+.boss-countdown.hidden { display: none; }
+
+.boss-countdown-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.countdown-math-symbol {
+  position: absolute;
+  bottom: -60px;
+  color: rgba(255, 80, 80, 0.5);
+  font-size: var(--sym-size);
+  font-family: 'Pixellet', serif;
+  pointer-events: none;
+  animation: mathSymbolFloat var(--sym-dur) linear var(--sym-delay) forwards;
+}
+
+.boss-countdown-content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.boss-countdown-num {
+  font-family: 'Pixellet', sans-serif;
+  font-size: clamp(5rem, 25vw, 12rem);
+  color: #ff3030;
+  text-shadow: 0 0 40px #ff0000, 4px 4px 0 #000;
+  animation: countdownPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.boss-countdown-label {
+  font-family: 'Pixellet', sans-serif;
+  font-size: clamp(1.5rem, 6vw, 3rem);
+  color: #fff;
+  letter-spacing: 0.15em;
+  text-shadow: 2px 2px 0 #000;
+  animation: bossTextIn 0.5s ease-out forwards;
+}
+
+/* ── Boss Taunt Bubble ── */
+.boss-taunt {
+  position: fixed;
+  top: 14%;
+  right: 170px; /* ชิดรูป boss ที่มุมขวา */
+  z-index: 200;
+  background: #fff;
+  color: #1a1a1a;
+  font-family: 'Kanit', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 10px 16px;
+  border: 3px solid #ff2a2a;
+  border-radius: 14px 14px 4px 14px;
+  max-width: 200px;
+  box-shadow: 3px 3px 0 #ff2a2a;
+  animation: tauntIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+.boss-taunt.hidden { display: none; }
+.boss-taunt.leaving {
+  animation: tauntOut 0.35s ease-in forwards;
+}
+
+/* ── Math Rain (victory) ── */
+.math-rain-symbol {
+  position: fixed;
+  top: -60px;
+  color: var(--rain-color);
+  font-size: var(--rain-size);
+  font-family: 'Pixellet', serif;
+  pointer-events: none;
+  z-index: 300;
+  animation: mathRainDrop var(--rain-dur) ease-in var(--rain-delay) forwards;
+}
+.boss-victory-symbol {
+  position: fixed;
+  color: var(--vs-color);
+  font-size: var(--vs-size);
+  font-family: 'Pixellet', serif;
+  pointer-events: none;
+  z-index: 300;
+  animation: bossVictorySymbol 0.8s ease-out var(--vs-delay) forwards;
 }

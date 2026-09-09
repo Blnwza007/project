@@ -2,6 +2,11 @@ const STORAGE_KEY = 'mathrunner_settings';
 const savedData = localStorage.getItem(STORAGE_KEY);
 const currentSettings = savedData ? JSON.parse(savedData) : { character: 1 }; 
 
+const startBtn = document.getElementById('start-btn');
+if (startBtn && currentSettings.language === 'en') {
+    startBtn.textContent = 'START GAME';
+}
+
 const boy = document.getElementById('boyRun');
 const girl = document.getElementById('girlRun');
 
