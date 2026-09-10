@@ -7,9 +7,22 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#6fc3cc">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <section class="loading-screen" id="loadingScreen" aria-label="กำลังโหลดเกม">
+    <div class="loading-panel">
+      <h1 class="loading-title">คิดให้ไววิ่งให้ทัน</h1>
+      <p class="loading-subtitle">(MATH RUNNER)</p>
+      <p class="loading-text" id="loadingText" aria-live="polite">กำลังเตรียมสนาม...</p>
+      <div class="loading-track" role="progressbar" aria-label="ความคืบหน้าการโหลด">
+        <div class="loading-progress" id="loadingProgress"></div>
+      </div>
+      <button class="loading-skip" id="loadingSkip" type="button">ข้ามการโหลด</button>
+    </div>
+  </section>
   <div class="background">
     <img src="../picture/Cloud.png" alt="Decorative cloud" id="cloud-left" width="280" height="auto">
     <img src="../picture/Cloud.png" alt="Decorative cloud" id="cloud-right" width="280" height="auto">

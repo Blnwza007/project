@@ -1,4 +1,4 @@
-import { input, submit, loseLife, resetHearts, updateChaserDistance, playLanguage, playText } from "./script.js?v=5"
+import { input, submit, loseLife, resetHearts, updateChaserDistance, playLanguage, playText } from "./script.js"
 import { randomPick, rand, randNeg, shuffle, triples } from "./helperFunc.js"
 
 const raw = localStorage.getItem('mathRunner')

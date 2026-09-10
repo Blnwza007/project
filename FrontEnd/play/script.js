@@ -11,6 +11,26 @@ export const restartBtn = document.getElementById('restartBtn');
 export const menuButton = document.getElementById('menuBtn');
 export const menuLink = document.getElementById('menuLink');
 
+const fullscreenBtn = document.getElementById('fullscreenBtn');
+const enterFullscreen = async () => {
+  if (document.fullscreenElement || !document.documentElement.requestFullscreen) return;
+  try {
+    await document.documentElement.requestFullscreen();
+  } catch (error) {
+    // Fullscreen can be unavailable in some mobile browsers.
+  }
+};
+
+document.addEventListener('pointerdown', enterFullscreen, { once: true });
+
+fullscreenBtn?.addEventListener('click', async () => {
+  if (document.fullscreenElement) {
+    await document.exitFullscreen();
+  } else {
+    await enterFullscreen();
+  }
+});
+
 let hearts = 3; let gameEnded = false;
 
 const STORAGE_KEY = 'mathrunner_settings';
@@ -23,7 +43,7 @@ const PLAY_I18N = {
   th: {
     home: 'หน้าหลัก', level: 'LEVEL', score: 'คะแนน', hearts: 'ชีวิต',
     streak: count => `ตอบถูก ${count} ข้อติดต่อกัน`, placeholder: 'พิมพ์คำตอบ...',
-    submit: 'ส่งคำตอบ ▶', loading: 'กำลังโหลดโจทย์...', gameOver: 'จบเกม!',
+    submit: 'ส่งคำตอบ', loading: 'กำลังโหลดโจทย์...', gameOver: 'จบเกม!',
     correct: 'ตอบถูก', reached: 'ถึง Level', restart: 'เล่นอีกครั้ง',
     homeTitle: 'กลับหน้าหลัก', boss: level => `BOSS LEVEL ${level}`,
     levelBadge: level => `LEVEL ${level}`
@@ -31,7 +51,7 @@ const PLAY_I18N = {
   en: {
     home: 'Home', level: 'LEVEL', score: 'Score', hearts: 'Lives',
     streak: count => `${count} correct in a row`, placeholder: 'Type your answer...',
-    submit: 'Submit answer ▶', loading: 'Loading question...', gameOver: 'Game Over!',
+    submit: 'Submit answer', loading: 'Loading question...', gameOver: 'Game Over!',
     correct: 'Correct', reached: 'Reached Level', restart: 'Play again',
     homeTitle: 'Back to home', boss: level => `BOSS LEVEL ${level}`,
     levelBadge: level => `LEVEL ${level}`
@@ -71,7 +91,6 @@ applyPlayLanguage();
 const saveLeaderboardScore = () => {
   const scores = JSON.parse(localStorage.getItem(LEADERBOARD_KEY) || '[]');
   scores.push({
-    name: currentSettings.playerName || 'ผู้เล่นนิรนาม',
     name: currentSettings.playerName || (currentSettings.language === 'en' ? 'Anonymous' : 'ผู้เล่นนิรนาม'),
     score: Number(scoreDisplay?.textContent) || 0,
     level: Number(tierDisplay?.textContent) || 1,

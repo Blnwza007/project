@@ -1,0 +1,11 @@
+{
+  "name": "คิดให้ไววิ่งให้ทัน",
+  "short_name": "Math Runner",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#6fc3cc",
+  "theme_color": "#6fc3cc",
+  "icons": []
+}

@@ -42,18 +42,6 @@ body {
   animation: pulse 4s ease-in-out infinite;
 }
 
-/* ── Running character ── */
-.run {
-  position: fixed;
-  left: 0;
-  bottom: 8%;
-  width: 100%;
-  pointer-events: none;
-  z-index: 0;
-}
-#boyRun  { position: absolute; width: 350px; left: -350px; bottom: 0%; }
-#girlRun { position: absolute; width: 100px;  left: -350px;  bottom: 0%; }
-
 /* ── Main layout ── */
 .container {
   position: relative;

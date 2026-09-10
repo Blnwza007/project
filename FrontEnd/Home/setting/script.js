@@ -158,7 +158,6 @@ charCards.forEach(card => {
     
     currentSettings.character = card.dataset.char === 'girl' ? 1 : 2;
     saveSettings(currentSettings);
-    syncRunningCharacter(currentSettings.character);
     showToast();
   });
 });
@@ -189,31 +188,4 @@ function showToast() {
   toastTimer = setTimeout(() => toast.classList.remove('show'), 1800);
 }
 
-// ── Running background sprite ────────────────────────────────────────────
-const boy  = document.getElementById('boyRun');
-const girl = document.getElementById('girlRun');
-let posX = -350;
-
-function syncRunningCharacter(charNum) {
-  if (charNum === 2) { 
-    boy.style.display  = 'block';
-    girl.style.display = 'none';
-  } else {             
-    girl.style.display = 'block';
-    boy.style.display  = 'none';
-  }
-}
-
-function animateSetting() {
-  const activeEl = currentSettings.character === 2 ? boy : girl;
-  if (activeEl) {
-    activeEl.style.left = posX + 'px';
-    posX += 2;
-    if (posX > window.innerWidth) posX = -activeEl.offsetWidth;
-  }
-  requestAnimationFrame(animateSetting);
-}
-
 initUI();
-syncRunningCharacter(currentSettings.character);
-animateSetting();
