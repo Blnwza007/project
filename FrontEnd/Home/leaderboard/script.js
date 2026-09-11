@@ -1,4 +1,3 @@
-
 const lbLoading    = document.getElementById("lbLoading");
 const lbEmpty      = document.getElementById("lbEmpty");
 const lbError      = document.getElementById("lbError");
@@ -25,6 +24,7 @@ const myRankLabel   = document.getElementById("myRankLabel");
 
 const SETTINGS_KEY    = "mathrunner_settings";
 const LEADERBOARD_KEY = "mathRunnerLeaderboard";
+const DEVICE_ID_KEY   = "mathrunner_deviceId";
 
 const savedSettings = (() => {
   try { return JSON.parse(localStorage.getItem(SETTINGS_KEY)) || {}; } catch { return {}; }
@@ -32,6 +32,18 @@ const savedSettings = (() => {
 
 const currentLang = savedSettings.language === "en" ? "en" : "th";
 const myName = savedSettings.playerName || null;
+
+// Same device-identity helper as settings/play — this, not the name,
+// is what determines which row on the leaderboard is actually "me".
+function getDeviceId() {
+  let id = localStorage.getItem(DEVICE_ID_KEY);
+  if (!id) {
+    id = (crypto.randomUUID ? crypto.randomUUID() : `dev-${Date.now()}-${Math.random().toString(16).slice(2)}`);
+    localStorage.setItem(DEVICE_ID_KEY, id);
+  }
+  return id;
+}
+const myDeviceId = getDeviceId();
 
 // ── Multi-language dictionary (Usernames are NEVER translated) ────────────
 const LB_I18N = {
@@ -159,7 +171,7 @@ function renderPodium(entries) {
 }
 
 // ── Render table (rank 4+) ────────────────────────────────────────────────
-function renderTable(entries, myPlayerName) {
+function renderTable(entries, myDeviceId) {
   lbTableBody.innerHTML = "";
   const rest = entries.slice(3);
 
@@ -172,7 +184,9 @@ function renderTable(entries, myPlayerName) {
     const score = entry.score ?? 0;
     const level = entry.level ?? "—";
 
-    const isMe = myPlayerName && entry.name === myPlayerName;
+    // "Me" is determined by this device's id, never by the name string —
+    // two different devices can pick the same display name.
+    const isMe = Boolean(myDeviceId && entry.deviceId && entry.deviceId === myDeviceId);
 
     const tr = document.createElement("tr");
     if (isMe) tr.classList.add("is-me");
@@ -196,10 +210,10 @@ function renderTable(entries, myPlayerName) {
 }
 
 // ── Render my-rank bar ────────────────────────────────────────────────────
-function renderMyRank(entries, myPlayerName) {
-  if (!myPlayerName) { myRankBar.classList.add("hidden"); return; }
+function renderMyRank(entries, myDeviceId) {
+  if (!myDeviceId) { myRankBar.classList.add("hidden"); return; }
 
-  const found = entries.find(e => e.name === myPlayerName);
+  const found = entries.find(e => e.deviceId && e.deviceId === myDeviceId);
   if (!found) { myRankBar.classList.add("hidden"); return; }
 
   myRankBar.classList.remove("hidden");
@@ -209,11 +223,11 @@ function renderMyRank(entries, myPlayerName) {
 
 // ── Public: load data ─────────────────────────────────────────────────────
 /**
- * @param {Array<{rank:number, name:string, score:number, level:number|string}>} data
- * @param {string} [myPlayerName] - optional, highlights the player
+ * @param {Array<{rank:number, name:string, score:number, level:number|string, deviceId?:string}>} data
+ * @param {string} [myDeviceIdOverride] - optional, highlights the player owning this device id
  */
-window.loadLeaderboard = function (data, myPlayerName) {
-  const nameToMatch = myPlayerName ?? myName;
+window.loadLeaderboard = function (data, myDeviceIdOverride) {
+  const idToMatch = myDeviceIdOverride ?? myDeviceId;
 
   if (!Array.isArray(data) || data.length === 0) {
     setState("empty");
@@ -222,8 +236,8 @@ window.loadLeaderboard = function (data, myPlayerName) {
 
   setState("data");
   renderPodium(data);
-  renderTable(data, nameToMatch);
-  renderMyRank(data, nameToMatch);
+  renderTable(data, idToMatch);
+  renderMyRank(data, idToMatch);
 };
 
 // ── Public: show error ────────────────────────────────────────────────────
@@ -250,48 +264,68 @@ if (lbTabs) {
 
 // ── Retry button ──────────────────────────────────────────────────────────
 retryBtn.addEventListener("click", () => {
-  if (typeof window.onRetry === "function") {
-    setState("loading");
-    window.onRetry(currentFilter);
-  }
+  fetchAndRender();
 });
 
-// ── Load Leaderboard with real and/or mock data ───────────────────────────
-setTimeout(() => {
+// ── Load Leaderboard: Backend API → fallback localStorage ─────────────────
+const API_URL = "http://localhost:3000";
+
+async function fetchAndRender() {
+  setState("loading");
+
+  // 1) พยายามดึงจาก Backend
+  try {
+    const res = await fetch(`${API_URL}/scores`, { signal: AbortSignal.timeout(5000) });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
+    const apiData = (json.data || []).map((item, i) => ({
+      rank:  i + 1,
+      name:  item.playerName,
+      score: item.score  || 0,
+      level: item.level  || 1,
+      deviceId: item.deviceId || null,
+    }));
+
+    if (apiData.length > 0) {
+      window.loadLeaderboard(apiData, myDeviceId);
+      return;
+    }
+  } catch (err) {
+    console.warn("⚠️ ดึงข้อมูลจาก Backend ไม่ได้:", err.message);
+  }
+
+  // 2) Fallback: localStorage + mock
   let savedList = [];
   try {
     const raw = localStorage.getItem(LEADERBOARD_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) {
-        savedList = parsed;
-      }
+      if (Array.isArray(parsed)) savedList = parsed;
     }
-  } catch (e) {
-    console.warn("Could not read leaderboard from storage:", e);
-  }
+  } catch (_) {}
 
-  const defaultMock = [
-    { name: "kuaitun", score: 9500, level: 50 },
-    { name: "boom", score: 8200, level: 42 },
-    { name: "pansa", score: 7100, level: 35 },
-    { name: "BeemTheGoat", score: 6500, level: 30 },
+  const fallbackMock = [
+    { name: "kuaitun",       score: 9500, level: 50 },
+    { name: "boom",          score: 8200, level: 42 },
+    { name: "pansa",         score: 7100, level: 35 },
+    { name: "BeemTheGoat",   score: 6500, level: 30 },
     { name: "GotLoveFemboy", score: 5400, level: 25 },
-    { name: "Tim", score: 4300, level: 18 },
-    { name: "kingofnok", score: 3200, level: 12 },
+    { name: "Tim",           score: 4300, level: 18 },
+    { name: "kingofnok",     score: 3200, level: 12 },
   ];
 
-  // Merge saved user scores and mock list
-  const combined = [...savedList, ...defaultMock];
+  const combined = [...savedList, ...fallbackMock];
   combined.sort((a, b) => (b.score || 0) - (a.score || 0));
 
-  const rankedData = combined.slice(0, 20).map((item, index) => ({
-    rank: index + 1,
-    name: item.name,
+  const rankedData = combined.slice(0, 20).map((item, i) => ({
+    rank:  i + 1,
+    name:  item.name || item.playerName,
     score: item.score || 0,
-    level: item.level || 1
+    level: item.level || 1,
+    deviceId: item.deviceId || null,
   }));
 
-  const activeUser = myName || 'kingofnok';
-  window.loadLeaderboard(rankedData, activeUser);
-}, 400);
+  window.loadLeaderboard(rankedData, myDeviceId);
+}
+
+fetchAndRender();

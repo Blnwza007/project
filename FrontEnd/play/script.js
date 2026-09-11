@@ -35,6 +35,19 @@ let hearts = 3; let gameEnded = false;
 
 const STORAGE_KEY = 'mathrunner_settings';
 const LEADERBOARD_KEY = 'mathRunnerLeaderboard';
+const DEVICE_ID_KEY = 'mathrunner_deviceId';
+
+// Same device-identity helper as settings/leaderboard — proves score
+// ownership without needing a login/password.
+const getDeviceId = () => {
+  let id = localStorage.getItem(DEVICE_ID_KEY);
+  if (!id) {
+    id = (crypto.randomUUID ? crypto.randomUUID() : `dev-${Date.now()}-${Math.random().toString(16).slice(2)}`);
+    localStorage.setItem(DEVICE_ID_KEY, id);
+  }
+  return id;
+};
+
 const savedData = localStorage.getItem(STORAGE_KEY);
 const currentSettings = savedData ? JSON.parse(savedData) : { character: 1, language: 'th' };
 export const playLanguage = currentSettings.language === 'en' ? 'en' : 'th';
@@ -88,15 +101,39 @@ const applyPlayLanguage = () => {
 
 applyPlayLanguage();
 
-const saveLeaderboardScore = () => {
-  const scores = JSON.parse(localStorage.getItem(LEADERBOARD_KEY) || '[]');
-  scores.push({
-    name: currentSettings.playerName || (currentSettings.language === 'en' ? 'Anonymous' : 'ผู้เล่นนิรนาม'),
-    score: Number(scoreDisplay?.textContent) || 0,
-    level: Number(tierDisplay?.textContent) || 1,
-    date: new Date().toISOString()
-  });
-  localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(scores));
+const API_URL = 'http://localhost:3000';
+
+const saveLeaderboardScore = async () => {
+  const playerName = currentSettings.playerName ||
+    (currentSettings.language === 'en' ? 'Anonymous' : 'ผู้เล่นนิรนาม');
+  const score = Number(scoreDisplay?.textContent) || 0;
+  const level = Number(tierDisplay?.textContent) || 1;
+  const deviceId = getDeviceId();
+
+  // 1) บันทึกลง localStorage ไว้เสมอ (offline fallback)
+  try {
+    const scores = JSON.parse(localStorage.getItem(LEADERBOARD_KEY) || '[]');
+    scores.push({ name: playerName, score, level, deviceId, date: new Date().toISOString() });
+    localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(scores));
+  } catch (_) {}
+
+  // 2) ส่งไป Backend
+  try {
+    const res = await fetch(`${API_URL}/scores`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ playerName, score, level, deviceId }),
+    });
+    if (res.ok) {
+      console.log(`✅ ส่งคะแนนไปหลังบ้านสำเร็จ: ${playerName} → ${score} pts`);
+    } else {
+      const data = await res.json().catch(() => ({}));
+      console.warn('⚠️ Backend ตอบ:', res.status, data.msg);
+    }
+  } catch (err) {
+    // ไม่มี internet หรือ server ดับ — ใช้ localStorage แทน
+    console.warn('⚠️ ส่งคะแนนไม่ได้ (offline):', err.message);
+  }
 };
 
 const boy = document.getElementById('boyRun');
@@ -260,7 +297,7 @@ export const loseLife = () => {
       setTimeout(() => {
         gameOverScreen?.classList.remove('hidden');
         finalScore.textContent = scoreDisplay?.textContent || '0';
-        finalCorrect.textContent = scoreDisplay?.textContent || '0';
+        finalCorrect.textContent = String(Math.max(0, (Number(tierDisplay?.textContent) || 1) - 1));
         finalTier.textContent = tierDisplay?.textContent || '1';
       }, 600);
     }
