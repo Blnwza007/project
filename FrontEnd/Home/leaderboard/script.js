@@ -277,7 +277,7 @@ async function fetchAndRender() {
 
   // 1) พยายามดึงจาก Backend
   try {
-    const res = await fetch(`${API_URL}/scores`, { signal: AbortSignal.timeout(5000) });
+    const res = await fetch(`${API_URL}/scores`, { signal: AbortSignal.timeout(15000) });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const json = await res.json();
     const apiData = (json.data || []).map((item, i) => ({
