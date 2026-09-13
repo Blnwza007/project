@@ -18,14 +18,21 @@ router.post("/", async (req, res) => {
         const owner = deviceId ? await User.findOne({ deviceId }) : null;
         const savedPlayerName = owner?.playerName ?? playerName.trim();
 
-        const newScore = new Score({
+        const key = deviceId ? { deviceId } : { playerName: savedPlayerName }
+
+await Score.findOneAndUpdate(
+    key,
+    {
+        $max: { score: Number(score) },
+        $set: {
             playerName: savedPlayerName,
-            score: Number(score),
             level: Number(level) || 1,
             deviceId: deviceId || null,
-        });
-
-        await newScore.save();
+            date: new Date()
+        }
+    },
+    { upsert: true, new: true }
+)
         console.log(`บันทึกคะแนน: ${savedPlayerName} → ${score} pts (Level ${level})`);
 
         return res.status(201).json({
