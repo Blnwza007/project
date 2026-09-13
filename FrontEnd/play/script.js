@@ -101,7 +101,7 @@ const applyPlayLanguage = () => {
 
 applyPlayLanguage();
 
-const API_URL = 'http://localhost:3000';
+const API_URL = 'https://project-vw4a.onrender.com';
 
 const saveLeaderboardScore = async () => {
   const playerName = currentSettings.playerName ||
