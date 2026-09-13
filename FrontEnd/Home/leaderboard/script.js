@@ -162,11 +162,13 @@ function renderPodium(entries) {
     const avatar = document.getElementById(`avatar${rank}`);
     const name   = document.getElementById(`name${rank}`);
     const score  = document.getElementById(`score${rank}`);
+    const level  = document.getElementById(`level${rank}`);
 
     if (avatar) avatar.innerHTML   = entry ? getAvatar(rank, entry) : "—";
     // Keep username intact (no translation)
     if (name)   name.textContent   = entry ? (entry.name || t.unknownPlayer) : "—";
     if (score)  score.textContent  = entry ? `${entry.score.toLocaleString()} ${t.ptsPodium}` : "";
+    if (level)  level.textContent  = entry ? `Level ${entry.level ?? "—"}` : "Level —";
   });
 }
 

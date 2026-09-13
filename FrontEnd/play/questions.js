@@ -85,7 +85,7 @@ const genExponent = (level) => {
   } else {
     const exp1 = rand(2, 5)
     const exp2 = rand(2, 5)
-    return { q: `${base}^${exp1} × ${base}^${exp2} = ?`, ans: (`${base}^${(exp1 + exp2)}`), type: 'string' }
+    return { q: `${base}^${exp1} × ${base}^${exp2} = ? \n Ex: 1^2 x 1^2 = 1^4`, ans: (`${base}^${(exp1 + exp2)}`), type: 'string' }
   }
 }
 
@@ -581,8 +581,9 @@ let _wasJustBoss = false;
 const showQuestion = () => {
   let question;
   const isBoss = currentLevel % 5 === 0;
+  const isNewBoss = isBoss && !_wasJustBoss;
 
-  const _renderQuestion = () => {
+  const _renderQuestion = (showStartTaunt = false) => {
     // Generate slightly harder question for boss
     const effectiveLevel = isBoss ? currentLevel + 5 : currentLevel;
 
@@ -610,13 +611,12 @@ const showQuestion = () => {
     // Boss gets less time
     startTimer(isBoss ? 15 : 30)
 
-    // Show boss taunt on level start
-    if (isBoss) setTimeout(() => showBossTaunt('start'), 300);
+    // Show the opening taunt only once when entering a boss level.
+    if (showStartTaunt) setTimeout(() => showBossTaunt('start'), 300);
   };
 
   if (isBoss) {
     // Only show countdown if this is a NEW boss level (not re-showing after wrong answer)
-    const isNewBoss = !_wasJustBoss;
     _wasJustBoss = true;
 
     document.body.classList.add('boss-active');
@@ -625,7 +625,7 @@ const showQuestion = () => {
 
     if (isNewBoss) {
       clearTimer(); // pause timer during countdown
-      runBossCountdown().then(_renderQuestion);
+      runBossCountdown().then(() => _renderQuestion(true));
     } else {
       _renderQuestion();
     }

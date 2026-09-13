@@ -1,5 +1,6 @@
 import express from "express";
 import Score from "../models/score.model.js";
+import User from "../models/user.model.js";
 
 const router = express.Router();
 
@@ -14,19 +15,22 @@ router.post("/", async (req, res) => {
             });
         }
 
+        const owner = deviceId ? await User.findOne({ deviceId }) : null;
+        const savedPlayerName = owner?.playerName ?? playerName.trim();
+
         const newScore = new Score({
-            playerName: playerName.trim(),
+            playerName: savedPlayerName,
             score: Number(score),
             level: Number(level) || 1,
             deviceId: deviceId || null,
         });
 
         await newScore.save();
-        console.log(`บันทึกคะแนน: ${playerName} → ${score} pts (Level ${level})`);
+        console.log(`บันทึกคะแนน: ${savedPlayerName} → ${score} pts (Level ${level})`);
 
         return res.status(201).json({
             msg: "Score saved",
-            data: { playerName, score, level, deviceId }
+            data: { playerName: savedPlayerName, score, level, deviceId }
         });
     } catch (error) {
         console.error(error);
@@ -43,7 +47,8 @@ router.get("/", async (req, res) => {
             { $sort: { score: -1, date: -1 } },
             {
                 $group: {
-                    _id: "$playerName",
+                    _id: { $ifNull: ["$deviceId", "$playerName"] },
+                    playerName: { $first: "$playerName" },
                     score:    { $first: "$score" },
                     level:    { $first: "$level" },
                     date:     { $first: "$date" },
@@ -53,9 +58,27 @@ router.get("/", async (req, res) => {
             { $sort: { score: -1 } },
             { $limit: 20 },
             {
+                $lookup: {
+                    from: "users",
+                    localField: "deviceId",
+                    foreignField: "deviceId",
+                    as: "user"
+                }
+            },
+            {
+                $set: {
+                    playerName: {
+                        $ifNull: [
+                            { $arrayElemAt: ["$user.playerName", 0] },
+                            "$playerName"
+                        ]
+                    }
+                }
+            },
+            {
                 $project: {
                     _id: 0,
-                    playerName: "$_id",
+                    playerName: 1,
                     score: 1,
                     level: 1,
                     date: 1,
