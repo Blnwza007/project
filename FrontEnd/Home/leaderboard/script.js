@@ -306,17 +306,8 @@ async function fetchAndRender() {
     }
   } catch (_) {}
 
-  const fallbackMock = [
-    { name: "kuaitun",       score: 9500, level: 50 },
-    { name: "boom",          score: 8200, level: 42 },
-    { name: "pansa",         score: 7100, level: 35 },
-    { name: "BeemTheGoat",   score: 6500, level: 30 },
-    { name: "GotLoveFemboy", score: 5400, level: 25 },
-    { name: "Tim",           score: 4300, level: 18 },
-    { name: "kingofnok",     score: 3200, level: 12 },
-  ];
 
-  const combined = [...savedList, ...fallbackMock];
+  const combined = [...savedList];
   combined.sort((a, b) => (b.score || 0) - (a.score || 0));
 
   const rankedData = combined.slice(0, 20).map((item, i) => ({
