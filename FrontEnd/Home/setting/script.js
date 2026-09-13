@@ -1,7 +1,7 @@
 const STORAGE_KEY = 'mathrunner_settings';
 const LEADERBOARD_KEY = 'mathRunnerLeaderboard';
 const DEVICE_ID_KEY = 'mathrunner_deviceId';
-const API_URL = 'http://localhost:3000';
+const API_URL = 'https://project-vw4a.onrender.com';
 
 // ── Device identity ────────────────────────────────────────────────────
 // A random id generated once per device/browser. This is what actually

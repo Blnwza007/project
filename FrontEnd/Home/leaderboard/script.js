@@ -270,7 +270,7 @@ retryBtn.addEventListener("click", () => {
 });
 
 // ── Load Leaderboard: Backend API → fallback localStorage ─────────────────
-const API_URL = "http://localhost:3000";
+const API_URL = "https://project-vw4a.onrender.com";
 
 async function fetchAndRender() {
   setState("loading");
