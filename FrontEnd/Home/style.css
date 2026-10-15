@@ -678,3 +678,62 @@ main h2 {
     height: 60px;
   }
 }
+
+/* ── Name-missing toast ── */
+.name-toast {
+  position: fixed;
+  top: -120px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  width: min(360px, calc(100% - 32px));
+  background: #ffc700;
+  border: 3px solid #000;
+  box-shadow: 4px 4px 0 #000;
+  font-family: 'Kanit', sans-serif;
+  font-size: 15px;
+  color: #3a2000;
+  transition: top 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.name-toast.is-visible {
+  top: 16px;
+}
+
+.name-toast-icon {
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.name-toast-body {
+  flex: 1;
+}
+
+.name-toast-link {
+  display: inline-block;
+  margin-top: 4px;
+  font-weight: 600;
+  color: #d85718;
+  text-decoration: underline;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: inherit;
+  padding: 0;
+}
+
+.name-toast-close {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  line-height: 1;
+  color: #3a2000;
+  padding: 0 4px;
+}

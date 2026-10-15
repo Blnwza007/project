@@ -618,12 +618,3 @@ body.boss-active .timer-bar-inner {
   z-index: 300;
   animation: mathRainDrop var(--rain-dur) ease-in var(--rain-delay) forwards;
 }
-.boss-victory-symbol {
-  position: fixed;
-  color: var(--vs-color);
-  font-size: var(--vs-size);
-  font-family: 'Cambria Math', 'Segoe UI Symbol', 'Noto Sans Symbols 2', sans-serif;
-  pointer-events: none;
-  z-index: 300;
-  animation: bossVictorySymbol 0.8s ease-out var(--vs-delay) forwards;
-}
