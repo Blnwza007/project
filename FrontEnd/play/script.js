@@ -23,6 +23,223 @@ const enterFullscreen = async () => {
 
 document.addEventListener('pointerdown', enterFullscreen, { once: true });
 
+const AudioContextApi = window.AudioContext || window.webkitAudioContext;
+const bossChordRoots = [98, 73.42, 82.41, 65.41];
+const bossLeadNotes = [
+  392, 440, 493.88, 587.33, 493.88, 440, 392, 329.63,
+  392, 440, 587.33, 493.88, 440, 392, 349.23, 329.63,
+];
+let bossAudioContext = null;
+let bossMusicGain = null;
+let bossDrone = null;
+let bossMusicTimer = null;
+let bossMusicStep = 0;
+let bossMusicActive = false;
+
+const ensureAudioContext = () => {
+  if (!AudioContextApi) return null;
+
+  if (!bossAudioContext) {
+    bossAudioContext = new AudioContextApi();
+    bossMusicGain = bossAudioContext.createGain();
+    bossMusicGain.gain.value = 0;
+    bossMusicGain.connect(bossAudioContext.destination);
+  }
+
+  return bossAudioContext;
+};
+
+const playLoseSound = () => {
+  const context = ensureAudioContext();
+  if (!context) return;
+  if (context.state === 'suspended') context.resume().catch(() => {});
+
+  const now = context.currentTime;
+  const output = context.createGain();
+  output.gain.setValueAtTime(0.55, now);
+  output.connect(context.destination);
+
+  const notes = [
+    { frequency: 392, delay: 0, duration: 0.2, volume: 0.24 },
+    { frequency: 293.66, delay: 0.18, duration: 0.28, volume: 0.24 },
+    { frequency: 220, delay: 0.4, duration: 0.34, volume: 0.26 },
+    { frequency: 146.83, delay: 0.64, duration: 0.6, volume: 0.3 },
+  ];
+
+  notes.forEach((note, index) => {
+    const start = now + note.delay;
+    const oscillator = context.createOscillator();
+    const envelope = context.createGain();
+    oscillator.type = 'triangle';
+    oscillator.frequency.setValueAtTime(note.frequency, start);
+    oscillator.frequency.exponentialRampToValueAtTime(note.frequency * 0.92, start + note.duration * 0.8);
+    envelope.gain.setValueAtTime(0.0001, start);
+    envelope.gain.exponentialRampToValueAtTime(note.volume, start + 0.025);
+    envelope.gain.exponentialRampToValueAtTime(0.0001, start + note.duration);
+    oscillator.connect(envelope);
+    envelope.connect(output);
+    oscillator.onended = () => {
+      oscillator.disconnect();
+      envelope.disconnect();
+      if (index === notes.length - 1) output.disconnect();
+    };
+    oscillator.start(start);
+    oscillator.stop(start + note.duration);
+  });
+};
+
+const playBossTone = (frequency, duration, volume, type = 'triangle') => {
+  if (!bossAudioContext || !bossMusicGain) return;
+
+  const now = bossAudioContext.currentTime;
+  const oscillator = bossAudioContext.createOscillator();
+  const envelope = bossAudioContext.createGain();
+  oscillator.type = type;
+  oscillator.frequency.setValueAtTime(frequency, now);
+  envelope.gain.setValueAtTime(0.0001, now);
+  envelope.gain.exponentialRampToValueAtTime(volume, now + 0.04);
+  envelope.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+  oscillator.connect(envelope);
+  envelope.connect(bossMusicGain);
+  oscillator.onended = () => {
+    oscillator.disconnect();
+    envelope.disconnect();
+  };
+  oscillator.start(now);
+  oscillator.stop(now + duration);
+};
+
+const playBossNoise = (duration, volume, cutoff) => {
+  if (!bossAudioContext || !bossMusicGain) return;
+
+  const now = bossAudioContext.currentTime;
+  const sampleRate = bossAudioContext.sampleRate;
+  const buffer = bossAudioContext.createBuffer(1, Math.ceil(sampleRate * duration), sampleRate);
+  const samples = buffer.getChannelData(0);
+  for (let index = 0; index < samples.length; index++) {
+    samples[index] = Math.random() * 2 - 1;
+  }
+
+  const source = bossAudioContext.createBufferSource();
+  const filter = bossAudioContext.createBiquadFilter();
+  const envelope = bossAudioContext.createGain();
+  source.buffer = buffer;
+  filter.type = 'highpass';
+  filter.frequency.setValueAtTime(cutoff, now);
+  envelope.gain.setValueAtTime(volume, now);
+  envelope.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+  source.connect(filter);
+  filter.connect(envelope);
+  envelope.connect(bossMusicGain);
+  source.onended = () => {
+    source.disconnect();
+    filter.disconnect();
+    envelope.disconnect();
+  };
+  source.start(now);
+  source.stop(now + duration);
+};
+
+const playBossKick = () => {
+  if (!bossAudioContext || !bossMusicGain) return;
+
+  const now = bossAudioContext.currentTime;
+  const oscillator = bossAudioContext.createOscillator();
+  const envelope = bossAudioContext.createGain();
+  oscillator.type = 'sine';
+  oscillator.frequency.setValueAtTime(145, now);
+  oscillator.frequency.exponentialRampToValueAtTime(48, now + 0.16);
+  envelope.gain.setValueAtTime(0.0001, now);
+  envelope.gain.exponentialRampToValueAtTime(0.42, now + 0.008);
+  envelope.gain.exponentialRampToValueAtTime(0.0001, now + 0.2);
+  oscillator.connect(envelope);
+  envelope.connect(bossMusicGain);
+  oscillator.onended = () => {
+    oscillator.disconnect();
+    envelope.disconnect();
+  };
+  oscillator.start(now);
+  oscillator.stop(now + 0.2);
+};
+
+const playBossSnare = () => {
+  playBossNoise(0.16, 0.28, 1200);
+  playBossTone(185, 0.14, 0.12, 'triangle');
+};
+
+export const setBossMusic = (active) => {
+  if (active === bossMusicActive) return;
+  bossMusicActive = active;
+  const context = ensureAudioContext();
+  if (!context) return;
+
+  const now = context.currentTime;
+  bossMusicGain.gain.cancelScheduledValues(now);
+  bossMusicGain.gain.setTargetAtTime(active ? 0.4 : 0, now, active ? 0.2 : 0.15);
+
+  if (!active) {
+    clearInterval(bossMusicTimer);
+    bossMusicTimer = null;
+    if (bossDrone) {
+      const drone = bossDrone;
+      bossDrone = null;
+      drone.onended = () => drone.disconnect();
+      drone.stop(now + 0.6);
+    }
+    return;
+  }
+
+  if (context.state === 'suspended') {
+    context.resume().catch(() => {});
+  }
+
+  bossDrone = context.createOscillator();
+  const droneGain = context.createGain();
+  bossDrone.type = 'sine';
+  bossDrone.frequency.setValueAtTime(55, now);
+  droneGain.gain.setValueAtTime(0.1, now);
+  bossDrone.connect(droneGain);
+  droneGain.connect(bossMusicGain);
+  bossDrone.onended = () => {
+    bossDrone?.disconnect();
+    droneGain.disconnect();
+    bossDrone = null;
+  };
+  bossDrone.start(now);
+
+  const playStep = () => {
+    if (!bossMusicActive) return;
+    const step = bossMusicStep % 32;
+    const chordRoot = bossChordRoots[Math.floor(step / 8)];
+    playBossTone(chordRoot, 0.22, 0.14, 'square');
+    playBossNoise(0.035, 0.07, 7000);
+
+    if (step % 8 === 0 || step % 8 === 4) {
+      playBossKick();
+      playBossTone(chordRoot * 2, 0.3, 0.12, 'sawtooth');
+      playBossTone(chordRoot * 3, 0.3, 0.08, 'sawtooth');
+    } else if (step % 8 === 2 || step % 8 === 6) {
+      playBossSnare();
+    }
+
+    if (step % 2 === 0) {
+      const leadNote = bossLeadNotes[Math.floor(step / 2)];
+      playBossTone(leadNote, 0.24, 0.07, 'triangle');
+    }
+    bossMusicStep++;
+  };
+
+  bossMusicStep = 0;
+  playStep();
+  bossMusicTimer = setInterval(playStep, 360);
+};
+
+document.addEventListener('pointerdown', () => {
+  const context = ensureAudioContext();
+  if (context?.state === 'suspended') context.resume().catch(() => {});
+}, { once: true });
+window.addEventListener('pagehide', () => setBossMusic(false));
+
 fullscreenBtn?.addEventListener('click', async () => {
   if (document.fullscreenElement) {
     await document.exitFullscreen();
@@ -324,6 +541,8 @@ export const loseLife = () => {
 
     if (hearts === 0) {
       gameEnded = true;
+      playLoseSound();
+      setBossMusic(false);
       explodeCharacter();
       saveLeaderboardScore();
       // Delay game over screen so explosion plays first

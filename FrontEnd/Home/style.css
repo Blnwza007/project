@@ -737,3 +737,38 @@ main h2 {
   color: #3a2000;
   padding: 0 4px;
 }
+
+@media (max-width: 768px) {
+  .name-toast {
+    top: -140px;
+    width: min(420px, calc(100% - 24px));
+    gap: 10px;
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+
+  .name-toast.is-visible { top: max(12px, env(safe-area-inset-top)); }
+
+  .name-toast-close {
+    display: grid;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    place-items: center;
+  }
+}
+
+@media (max-width: 375px) {
+  .name-toast {
+    top: -150px;
+    width: calc(100% - 20px);
+    gap: 8px;
+    padding: 9px 10px;
+    border-width: 2px;
+    font-size: 13px;
+  }
+
+  .name-toast.is-visible { top: max(10px, env(safe-area-inset-top)); }
+  .name-toast-icon { font-size: 18px; }
+  .name-toast-close { width: 30px; height: 30px; font-size: 18px; }
+}

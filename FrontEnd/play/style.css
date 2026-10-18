@@ -525,6 +525,16 @@ body.boss-active .timer-bar-inner {
   animation: floatUp 1s ease-out forwards;
 }
 
+.boss-victory-symbol {
+  position: fixed;
+  color: var(--vs-color);
+  font-size: var(--vs-size);
+  font-family: 'Cambria Math', 'Segoe UI Symbol', 'Noto Sans Symbols 2', sans-serif;
+  pointer-events: none;
+  z-index: 300;
+  animation: bossVictorySymbol 0.9s ease-out var(--vs-delay) forwards;
+}
+
 /* ── Boss Countdown Overlay ── */
 .boss-countdown {
   position: fixed;

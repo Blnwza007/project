@@ -1,4 +1,4 @@
-import { input, submit, loseLife, resetHearts, updateChaserDistance, playLanguage, playText } from "./script.js"
+import { input, submit, loseLife, resetHearts, updateChaserDistance, setBossMusic, playLanguage, playText } from "./script.js"
 import { randomPick, rand, randNeg, shuffle, triples } from "./helperFunc.js"
 
 const raw = localStorage.getItem('mathRunner')
@@ -616,6 +616,7 @@ const showQuestion = () => {
     // Only show countdown if this is a NEW boss level (not re-showing after wrong answer)
     _wasJustBoss = true;
 
+    setBossMusic(true);
     document.body.classList.add('boss-active');
     document.getElementById('bossEntity').classList.remove('hidden');
     document.getElementById('tierBadge').textContent = playText.boss(currentLevel);
@@ -628,6 +629,7 @@ const showQuestion = () => {
     }
   } else {
     _wasJustBoss = false;
+    setBossMusic(false);
     document.body.classList.remove('boss-active');
     document.getElementById('bossEntity').classList.add('hidden');
     document.getElementById('tierBadge').textContent = playText.levelBadge(currentLevel);

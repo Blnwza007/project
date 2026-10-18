@@ -456,3 +456,62 @@ body {
 }
 .mainbtn:hover { filter: brightness(1.1); transform: translateY(-2px); }
 .mainbtn:active { transform: translateY(2px); box-shadow: 0 2px 0 #000; }
+
+@media (max-width: 768px) {
+  .lb-container { padding: 12px; gap: 8px; }
+  .back-btn { left: 12px; top: 12px; padding: 6px 10px; }
+  .lb-podium { gap: 6px; padding: 18px 10px 0; }
+  .lb-table th,
+  .lb-table td { padding-right: 8px; padding-left: 8px; }
+  .my-rank { gap: 6px; padding: 8px 12px; }
+  .my-rank-num { font-size: 1.3rem; }
+  .my-rank-score { font-size: 1rem; }
+}
+
+@media (max-width: 480px) {
+  .lb-container { padding: 10px; gap: 8px; }
+  .lb-header { padding-top: 4px; }
+  .lb-title { font-size: 1.35rem; }
+  .lb-subtitle { font-size: 0.7rem; letter-spacing: 2px; }
+
+  .lb-podium { gap: 4px; padding: 14px 6px 0; }
+  .podium-crown { height: 30px; }
+  .crown-icon { width: 36px; height: 30px; }
+  .podium-avatar { width: 44px; height: 44px; }
+  .podium-slot.first .podium-avatar { width: 54px; height: 54px; }
+  .podium-name { max-width: 88px; font-size: 0.75rem; }
+  .podium-score { font-size: 1rem; }
+  .podium-level { font-size: 0.72rem; }
+  .podium-block { font-size: 1.6rem; }
+  .podium-block.gold { min-height: 72px; }
+  .podium-block.silver { min-height: 52px; }
+  .podium-block.bronze { min-height: 42px; }
+
+  .lb-table th {
+    padding: 8px 6px 6px;
+    font-size: 0.62rem;
+    letter-spacing: 1px;
+  }
+  .lb-table td { padding: 8px 6px; font-size: 0.85rem; }
+  .col-rank { width: 42px; }
+  .rank-badge { width: 26px; height: 26px; font-size: 0.85rem; }
+  .td-score { font-size: 1rem; }
+  .col-level { font-size: 0.9rem; }
+  .lb-table td:nth-child(2) { overflow-wrap: anywhere; }
+  .my-rank { flex-wrap: wrap; }
+  .my-rank-label { font-size: 0.72rem; }
+  .my-rank-num { font-size: 1.2rem; }
+  .my-rank-score { font-size: 0.9rem; }
+}
+
+@media (max-width: 360px) {
+  .lb-header { padding-left: 76px; }
+  .back-btn { left: 10px; top: 10px; padding: 5px 8px; font-size: 0.75rem; }
+  .lb-title { font-size: 1.2rem; }
+  .lb-podium { padding-right: 2px; padding-left: 2px; }
+  .lb-table th { font-size: 0.58rem; letter-spacing: 0; }
+  .lb-table th,
+  .lb-table td { padding-right: 4px; padding-left: 4px; }
+  .col-rank { width: 36px; }
+  .rank-badge { width: 24px; height: 24px; }
+}
