@@ -374,12 +374,10 @@ const startTimer = (seconds = 30) => {
   timeLeft = seconds
   maxTime = seconds
   updateTimerDisplay()
-  console.log('timer start', timeLeft)
 
   timerId = setInterval(() => {
     timeLeft -= 1
     updateTimerDisplay()
-    console.log('timeLeft', timeLeft)
 
     if (timeLeft <= 0) {
       clearTimer()
@@ -604,7 +602,6 @@ const showQuestion = () => {
     const answerType = typeof ans === 'string' ? 'string' : 'number'
     currentQuestion = { q, ans, type: answerType }
     input.value = ''
-    console.log('currentLevel', currentLevel, 'ans', ans)
     document.getElementById('questionDisplay').textContent = displayQuestion
     document.getElementById('tierDisplay').textContent = currentLevel
 

@@ -143,12 +143,23 @@ const chaser = document.getElementById('chaserRun'); // ตัววิ่งไ
 let positionBoy = -350;
 let positionGirl = -350;
 let currentChaserDistance = 400; // ระยะห่างเริ่มต้น (ไกลสุด)
+let targetChaserDistance = currentChaserDistance;
+let lastChaserUpdate = performance.now();
+let playerHasWrapped = false;
+let playerLapOffset = 0;
 const screenWidth = window.innerWidth;
+
+const getMaxChaserDistance = () => {
+  const activeCharacter = currentSettings.character === 2 ? boy : girl;
+  const loopWidth = Math.max(activeCharacter.offsetWidth, chaser?.offsetWidth || 0);
+  return Math.max(50, Math.min(500, (screenWidth + loopWidth) / 2 - 24));
+};
 
 // ฟังก์ชันสำหรับอัปเดตระยะห่างจากภายนอก (questions.js)
 export const updateChaserDistance = (percent) => {
-    // ให้ระยะห่างอยู่ระหว่าง 50px (ประชิดตัว) ถึง 500px (ไกลสุด)
-    currentChaserDistance = 50 + (percent * 450);
+  const maxDistance = getMaxChaserDistance();
+  const timePercent = Math.max(0, Math.min(1, percent));
+  targetChaserDistance = 50 + (timePercent * (maxDistance - 50));
 }
 
 const currentCharacter = () => {
@@ -169,21 +180,29 @@ const animate = () => {
         requestAnimationFrame(animate);
         return;
     }
+    const activeCharacter = currentSettings.character === 2 ? boy : girl;
+    const chaserWidth = chaser?.offsetWidth || 0;
+    const loopWidth = Math.max(activeCharacter.offsetWidth, chaserWidth);
+    const loopLength = screenWidth + loopWidth;
     let currentPlayerPos = 0;
     
     if (currentSettings.character === 2) { 
         boy.style.left = positionBoy + "px";
         positionBoy += 2;
-        currentPlayerPos = positionBoy;
+        currentPlayerPos = positionBoy + playerLapOffset;
         if (positionBoy > screenWidth) {
-            positionBoy = -boy.offsetWidth;  
+          positionBoy = -loopWidth;
+          playerLapOffset += loopLength;
+          playerHasWrapped = true;
         }
     } else { 
         girl.style.left = positionGirl + "px";
         positionGirl += 2;
-        currentPlayerPos = positionGirl;
+        currentPlayerPos = positionGirl + playerLapOffset;
         if (positionGirl > screenWidth) {
-            positionGirl = -girl.offsetWidth;
+            positionGirl = -loopWidth;
+            playerLapOffset += loopLength;
+          playerHasWrapped = true;
         }
     }
     
@@ -196,8 +215,20 @@ const animate = () => {
         return;
       }
 
-        const bob = Math.sin(Date.now() / 150) * 5; 
-        chaser.style.left = (currentPlayerPos - currentChaserDistance) + "px";
+        const now = performance.now();
+        const elapsed = Math.min((now - lastChaserUpdate) / 1000, 0.1);
+        const smoothing = 1 - Math.exp(-6 * elapsed);
+        currentChaserDistance += (targetChaserDistance - currentChaserDistance) * smoothing;
+        lastChaserUpdate = now;
+
+        const bob = Math.sin(Date.now() / 150) * 5;
+        const maxChaserDistance = getMaxChaserDistance();
+        const chaserDistance = Math.min(currentChaserDistance, maxChaserDistance);
+        let chaserPosition = currentPlayerPos - chaserDistance;
+        if (playerHasWrapped) {
+          chaserPosition = ((chaserPosition + loopWidth) % loopLength + loopLength) % loopLength - loopWidth;
+        }
+        chaser.style.left = chaserPosition + "px";
         chaser.style.transform = `translateY(${bob}px)`;
     }
     
@@ -278,6 +309,8 @@ export const resetHearts = () => {
   // Reset character positions to start from the left
   positionBoy = -350;
   positionGirl = -350;
+  playerLapOffset = 0;
+  playerHasWrapped = false;
   // Remove explosion effect from characters
   boy?.classList.remove('exploding');
   girl?.classList.remove('exploding');
